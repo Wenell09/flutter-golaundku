@@ -22,15 +22,14 @@ class MaterialRepository {
     }
   }
 
-  Future<List<MaterialModel>> getMaterial() async {
-    try {
-      final response = await supabase.from("materials").select();
-      debugPrint("result get materials:$response");
-      return response.map((e) => MaterialModel.fromJson(e)).toList();
-    } catch (e) {
-      debugPrint("error get materials:$e");
-      throw Exception("error get materials:$e");
-    }
+  Stream<List<MaterialModel>> streamMaterial() {
+    return supabase
+        .from("materials")
+        .stream(primaryKey: ["material_id"])
+        .map((data) => data.map((e) => MaterialModel.fromJson(e)).toList())
+        .handleError((error) {
+          throw Exception("stream material error : $error");
+        });
   }
 
   Future<void> updateMaterial(Map<String, dynamic> data) async {

@@ -23,8 +23,8 @@ class CustomerRepository {
 
   Stream<List<CustomerModel>> streamCustomers() {
     return supabase
-        .from('customers')
-        .stream(primaryKey: ['customer_id'])
+        .from("customers")
+        .stream(primaryKey: ["customer_id"])
         .map((data) => data.map((e) => CustomerModel.fromJson(e)).toList())
         .handleError((error) {
           throw Exception("Stream customer error: $error");

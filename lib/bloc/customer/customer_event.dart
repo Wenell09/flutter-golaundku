@@ -4,14 +4,14 @@ class CustomerEvent {}
 
 class StartCustomerStream extends CustomerEvent {}
 
-class CustomerStreamError extends CustomerEvent {
+class ErrorCustomerStream extends CustomerEvent {
   final String message;
-  CustomerStreamError(this.message);
+  ErrorCustomerStream({required this.message});
 }
 
 class GetCustomer extends CustomerEvent {
   final List<CustomerModel> data;
-  GetCustomer(this.data);
+  GetCustomer({required this.data});
 }
 
 class AddCustomer extends CustomerEvent {

@@ -14,7 +14,7 @@ class _MaterialsPageState extends State<MaterialsPage> {
   late TextEditingController inputSearchProduct;
   @override
   void initState() {
-    context.read<MaterialBloc>().add(GetMaterial());
+    context.read<MaterialBloc>().add(StartMaterialStream());
     inputSearchProduct = TextEditingController();
     super.initState();
   }
@@ -35,8 +35,10 @@ class _MaterialsPageState extends State<MaterialsPage> {
           showSnackBarWidget(context, "Berhasil update barang!");
         } else if (state is MaterialDeleteSuccess) {
           showSnackBarWidget(context, "Berhasil menghapus barang!");
-        } else if (state is MaterialError) {
-          context.read<MaterialBloc>().add(GetMaterial());
+        } else if (state is MaterialActionError) {
+          showSnackBarWidget(context, state.message);
+        } else if (state is MaterialStreamError) {
+          showSnackBarWidget(context, "Koneksi realtime bermasalah");
         }
       },
       child: ListView(
@@ -58,6 +60,9 @@ class _MaterialsPageState extends State<MaterialsPage> {
           ),
           const SizedBox(height: 20),
           BlocBuilder<MaterialBloc, MaterialState>(
+            buildWhen: (previous, current) {
+              return current is MaterialLoading || current is MaterialLoaded;
+            },
             builder: (context, state) {
               if (state is MaterialLoading) {
                 return Center(child: CircularProgressIndicator());

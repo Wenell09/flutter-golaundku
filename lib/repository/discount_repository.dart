@@ -21,15 +21,14 @@ class DiscountRepository {
     }
   }
 
-  Future<List<DiscountModel>> getDiscount() async {
-    try {
-      final response = await supabase.from("discounts").select();
-      debugPrint("result get discounts:$response");
-      return response.map((e) => DiscountModel.fromJson(e)).toList();
-    } catch (e) {
-      debugPrint("error get discounts:$e");
-      throw Exception("error get discounts:$e");
-    }
+  Stream<List<DiscountModel>> streamDiscounts() {
+    return supabase
+        .from("discounts")
+        .stream(primaryKey: ["discount_id"])
+        .map((data) => data.map((e) => DiscountModel.fromJson(e)).toList())
+        .handleError((error) {
+          throw Exception("Stream discounts error: $error");
+        });
   }
 
   Future<void> updateDiscount(Map<String, dynamic> data) async {

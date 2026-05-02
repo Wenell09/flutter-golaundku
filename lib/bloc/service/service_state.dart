@@ -17,4 +17,12 @@ final class ServiceUpdateSuccess extends ServiceState {}
 
 final class ServiceDeleteSuccess extends ServiceState {}
 
-final class ServiceError extends ServiceState {}
+final class ServiceActionError extends ServiceState {
+  final String message;
+  ServiceActionError({required this.message});
+}
+
+final class ServiceStreamError extends ServiceState {
+  final String message;
+  ServiceStreamError({required this.message});
+}

@@ -19,10 +19,10 @@ final class CustomerDeleteSuccess extends CustomerState {}
 
 class CustomerActionError extends CustomerState {
   final String message;
-  CustomerActionError(this.message);
+  CustomerActionError({required this.message});
 }
 
-class CustomerStreamErrorState extends CustomerState {
+class CustomerStreamError extends CustomerState {
   final String message;
-  CustomerStreamErrorState(this.message);
+  CustomerStreamError({required this.message});
 }

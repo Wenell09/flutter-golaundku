@@ -23,15 +23,14 @@ class ServiceRepository {
     }
   }
 
-  Future<List<ServiceModel>> getService() async {
-    try {
-      final response = await supabase.from("services").select();
-      debugPrint("result get service:$response");
-      return response.map((e) => ServiceModel.fromJson(e)).toList();
-    } catch (e) {
-      debugPrint("error get service:$e");
-      throw Exception("error get service:$e");
-    }
+  Stream<List<ServiceModel>> streamServices() {
+    return supabase
+        .from("services")
+        .stream(primaryKey: ["service_id"])
+        .map((event) => event.map((e) => ServiceModel.fromJson(e)).toList())
+        .handleError((error) {
+          throw Exception("Stream service error:$error");
+        });
   }
 
   Future<void> updateService(Map<String, dynamic> data) async {

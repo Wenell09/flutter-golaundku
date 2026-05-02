@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bloc/bloc.dart';
 import 'package:flutter_golaundku/models/material_model.dart';
 import 'package:flutter_golaundku/repository/material_repository.dart';
@@ -7,49 +9,50 @@ part 'material_state.dart';
 
 class MaterialBloc extends Bloc<MaterialEvent, MaterialState> {
   final MaterialRepository materialRepository;
+  StreamSubscription<List<MaterialModel>>? _subscription;
+  List<MaterialModel> allMaterial = [];
   MaterialBloc(this.materialRepository) : super(MaterialInitial()) {
-    List<MaterialModel> allMaterial = [];
-    on<GetMaterial>((event, emit) async {
+    on<StartMaterialStream>((event, emit) async {
       emit(MaterialLoading());
-      try {
-        final materialData = await materialRepository.getMaterial();
-        allMaterial = materialData;
-        emit(MaterialLoaded(materialData: allMaterial));
-      } catch (e) {
-        emit(MaterialError());
-      }
+      await _subscription?.cancel();
+      _subscription = materialRepository.streamMaterial().listen(
+        (data) {
+          add(GetMaterial(data: data));
+        },
+        onError: (error) {
+          add(ErrorMaterialStream(message: error.toString()));
+        },
+      );
+    });
+    on<GetMaterial>((event, emit) async {
+      allMaterial = event.data;
+      emit(MaterialLoaded(materialData: allMaterial));
     });
 
     on<AddMaterial>((event, emit) async {
-      emit(MaterialLoading());
       try {
         await materialRepository.addMaterial(event.data);
         emit(MaterialAddSuccess());
-        add(GetMaterial());
       } catch (e) {
-        emit(MaterialError());
+        emit(MaterialActionError(message: "gagal menambahkan stok barang!"));
       }
     });
 
     on<UpdateMaterial>((event, emit) async {
-      emit(MaterialLoading());
       try {
         await materialRepository.updateMaterial(event.data);
         emit(MaterialUpdateSuccess());
-        add(GetMaterial());
       } catch (e) {
-        emit(MaterialError());
+        emit(MaterialActionError(message: "gagal mengupdate stok barang!"));
       }
     });
 
     on<DeleteMaterial>((event, emit) async {
-      emit(MaterialLoading());
       try {
         await materialRepository.deleteMaterial(event.materialId);
         emit(MaterialDeleteSuccess());
-        add(GetMaterial());
       } catch (e) {
-        emit(MaterialError());
+        emit(MaterialActionError(message: "gagal menghapus stok barang!"));
       }
     });
 

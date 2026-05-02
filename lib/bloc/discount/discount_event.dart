@@ -2,7 +2,17 @@ part of 'discount_bloc.dart';
 
 class DiscountEvent {}
 
-class GetDiscount extends DiscountEvent {}
+class StartDiscountStream extends DiscountEvent {}
+
+class ErrorDiscountStream extends DiscountEvent {
+  final String message;
+  ErrorDiscountStream({required this.message});
+}
+
+class GetDiscount extends DiscountEvent {
+  final List<DiscountModel> data;
+  GetDiscount({required this.data});
+}
 
 class AddDiscount extends DiscountEvent {
   final Map<String, dynamic> data;

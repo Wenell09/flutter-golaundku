@@ -61,18 +61,18 @@ class _CustomerPageState extends State<CustomerPage> {
           const SizedBox(height: 20),
           BlocBuilder<CustomerBloc, CustomerState>(
             buildWhen: (previous, current) {
-              return current is CustomerLoaded || current is CustomerLoading;
+              return current is CustomerLoading || current is CustomerLoaded;
             },
             builder: (context, state) {
               if (state is CustomerLoading) {
                 return Center(child: CircularProgressIndicator());
-              }
-              if (state is CustomerLoaded) {
+              } else if (state is CustomerLoaded) {
                 if (state.customerData.isEmpty) {
                   return SizedBox(
                     height: MediaQuery.of(context).size.height / 2,
                     child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisAlignment: .center,
+                      crossAxisAlignment: .center,
                       children: [
                         Icon(
                           Icons.warning,
@@ -90,7 +90,6 @@ class _CustomerPageState extends State<CustomerPage> {
                 return ListView.builder(
                   physics: ScrollPhysics(),
                   shrinkWrap: true,
-                  itemCount: state.customerData.length,
                   itemBuilder: (context, index) {
                     final data = state.customerData[index];
                     return Card(
@@ -98,7 +97,7 @@ class _CustomerPageState extends State<CustomerPage> {
                         padding: const EdgeInsets.all(10),
                         child: Column(
                           spacing: 10,
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                          crossAxisAlignment: .start,
                           children: [
                             Row(
                               children: [
@@ -128,14 +127,52 @@ class _CustomerPageState extends State<CustomerPage> {
                                           ),
                                     );
                                   },
-                                  icon: Icon(Icons.edit, size: 20),
+                                  icon: Icon(
+                                    Icons.edit,
+                                    size: 20,
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.primary,
+                                  ),
                                 ),
                                 IconButton(
                                   onPressed: () {
-                                    context.read<CustomerBloc>().add(
-                                      DeleteCustomer(
-                                        customerId: data.customerId,
-                                      ),
+                                    showDialog(
+                                      context: context,
+                                      builder: (context) {
+                                        return AlertDialog(
+                                          title: const Text("Hapus Customer"),
+                                          content: const Text(
+                                            "Apakah kamu yakin ingin menghapus customer ini?",
+                                          ),
+                                          actions: [
+                                            TextButton(
+                                              onPressed: () =>
+                                                  Navigator.of(context).pop(),
+                                              child: const Text("Batal"),
+                                            ),
+                                            FilledButton(
+                                              onPressed: () {
+                                                Navigator.of(context).pop();
+                                                context
+                                                    .read<CustomerBloc>()
+                                                    .add(
+                                                      DeleteCustomer(
+                                                        customerId:
+                                                            data.customerId,
+                                                      ),
+                                                    );
+                                              },
+                                              style: FilledButton.styleFrom(
+                                                backgroundColor: Theme.of(
+                                                  context,
+                                                ).colorScheme.error,
+                                              ),
+                                              child: const Text("Hapus"),
+                                            ),
+                                          ],
+                                        );
+                                      },
                                     );
                                   },
                                   icon: Icon(
@@ -151,16 +188,44 @@ class _CustomerPageState extends State<CustomerPage> {
                               children: [
                                 Row(
                                   children: [
-                                    Icon(Icons.phone, size: 20),
+                                    Icon(
+                                      Icons.phone,
+                                      size: 20,
+                                      color: Theme.of(
+                                        context,
+                                      ).colorScheme.primary,
+                                    ),
                                     const SizedBox(width: 5),
-                                    Text(data.phone),
+                                    Text(
+                                      data.phone.toString(),
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodyMedium!
+                                          .copyWith(
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                    ),
                                   ],
                                 ),
                                 Row(
                                   children: [
-                                    Icon(Icons.location_on, size: 20),
+                                    Icon(
+                                      Icons.location_on,
+                                      size: 20,
+                                      color: Theme.of(
+                                        context,
+                                      ).colorScheme.primary,
+                                    ),
                                     const SizedBox(width: 5),
-                                    Text(data.address),
+                                    Text(
+                                      data.address,
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodyMedium!
+                                          .copyWith(
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                    ),
                                   ],
                                 ),
                               ],
@@ -170,9 +235,10 @@ class _CustomerPageState extends State<CustomerPage> {
                       ),
                     );
                   },
+                  itemCount: state.customerData.length,
                 );
               }
-              return SizedBox();
+              return Container();
             },
           ),
         ],

@@ -13,7 +13,7 @@ class DiscountPage extends StatefulWidget {
 class _DiscountPageState extends State<DiscountPage> {
   @override
   void initState() {
-    context.read<DiscountBloc>().add(GetDiscount());
+    context.read<DiscountBloc>().add(StartDiscountStream());
     super.initState();
   }
 
@@ -27,8 +27,10 @@ class _DiscountPageState extends State<DiscountPage> {
           showSnackBarWidget(context, "Berhasil update discount!");
         } else if (state is DiscountDeleteSuccess) {
           showSnackBarWidget(context, "Berhasil menghapus discount!");
-        } else if (state is DiscountError) {
-          context.read<DiscountBloc>().add(GetDiscount());
+        } else if (state is DiscountActionError) {
+          showSnackBarWidget(context, state.message);
+        } else if (state is DiscountStreamError) {
+          showSnackBarWidget(context, "Koneksi realtime bermasalah");
         }
       },
       child: ListView(
@@ -36,6 +38,9 @@ class _DiscountPageState extends State<DiscountPage> {
         children: [
           const SizedBox(height: 20),
           BlocBuilder<DiscountBloc, DiscountState>(
+            buildWhen: (previous, current) {
+              return current is DiscountLoading || current is DiscountLoaded;
+            },
             builder: (context, state) {
               if (state is DiscountLoading) {
                 return Center(child: CircularProgressIndicator());

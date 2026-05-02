@@ -17,4 +17,12 @@ final class MaterialUpdateSuccess extends MaterialState {}
 
 final class MaterialDeleteSuccess extends MaterialState {}
 
-final class MaterialError extends MaterialState {}
+final class MaterialActionError extends MaterialState {
+  final String message;
+  MaterialActionError({required this.message});
+}
+
+final class MaterialStreamError extends MaterialState {
+  final String message;
+  MaterialStreamError({required this.message});
+}

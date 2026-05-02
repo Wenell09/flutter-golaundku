@@ -14,7 +14,7 @@ class _ServicePageState extends State<ServicePage> {
   late TextEditingController inputSearchLayanan;
   @override
   void initState() {
-    context.read<ServiceBloc>().add(GetService());
+    context.read<ServiceBloc>().add(StartServiceStream());
     inputSearchLayanan = TextEditingController();
     super.initState();
   }
@@ -35,8 +35,10 @@ class _ServicePageState extends State<ServicePage> {
           showSnackBarWidget(context, "Berhasil update layanan!");
         } else if (state is ServiceDeleteSuccess) {
           showSnackBarWidget(context, "Berhasil menghapus layanan!");
-        } else if (state is ServiceError) {
-          context.read<ServiceBloc>().add(GetService());
+        } else if (state is ServiceActionError) {
+          showSnackBarWidget(context, state.message);
+        } else if (state is ServiceStreamError) {
+          showSnackBarWidget(context, "Koneksi realtime bermasalah");
         }
       },
       child: ListView(
@@ -58,6 +60,9 @@ class _ServicePageState extends State<ServicePage> {
           ),
           const SizedBox(height: 20),
           BlocBuilder<ServiceBloc, ServiceState>(
+            buildWhen: (previous, current) {
+              return current is ServiceLoading || current is ServiceLoaded;
+            },
             builder: (context, state) {
               if (state is ServiceLoading) {
                 return Center(child: CircularProgressIndicator());

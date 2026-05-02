@@ -17,4 +17,12 @@ final class DiscountUpdateSuccess extends DiscountState {}
 
 final class DiscountDeleteSuccess extends DiscountState {}
 
-final class DiscountError extends DiscountState {}
+final class DiscountActionError extends DiscountState {
+  final String message;
+  DiscountActionError({required this.message});
+}
+
+final class DiscountStreamError extends DiscountState {
+  final String message;
+  DiscountStreamError({required this.message});
+}

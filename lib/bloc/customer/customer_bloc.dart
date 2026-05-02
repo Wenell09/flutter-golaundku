@@ -17,10 +17,10 @@ class CustomerBloc extends Bloc<CustomerEvent, CustomerState> {
       await _subscription?.cancel();
       _subscription = customerRepository.streamCustomers().listen(
         (data) {
-          add(GetCustomer(data));
+          add(GetCustomer(data: data));
         },
         onError: (error) {
-          add(CustomerStreamError(error.toString()));
+          add(ErrorCustomerStream(message: error.toString()));
         },
       );
     });
@@ -35,7 +35,7 @@ class CustomerBloc extends Bloc<CustomerEvent, CustomerState> {
         await customerRepository.addCustomer(event.data);
         emit(CustomerAddSuccess());
       } catch (e) {
-        emit(CustomerActionError("Gagal menambahkan customer"));
+        emit(CustomerActionError(message: "Gagal menambahkan customer!"));
       }
     });
 
@@ -44,7 +44,7 @@ class CustomerBloc extends Bloc<CustomerEvent, CustomerState> {
         await customerRepository.updateCustomer(event.data);
         emit(CustomerUpdateSuccess());
       } catch (e) {
-        emit(CustomerActionError("Gagal mengupdate customer"));
+        emit(CustomerActionError(message: "Gagal mengupdate customer!"));
       }
     });
 
@@ -53,7 +53,7 @@ class CustomerBloc extends Bloc<CustomerEvent, CustomerState> {
         await customerRepository.deleteCustomer(event.customerId);
         emit(CustomerDeleteSuccess());
       } catch (e) {
-        emit(CustomerActionError("Gagal menghapus customer"));
+        emit(CustomerActionError(message: "Gagal menghapus customer!"));
       }
     });
 

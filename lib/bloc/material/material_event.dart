@@ -2,7 +2,17 @@ part of 'material_bloc.dart';
 
 class MaterialEvent {}
 
-class GetMaterial extends MaterialEvent {}
+class StartMaterialStream extends MaterialEvent {}
+
+class ErrorMaterialStream extends MaterialEvent {
+  final String message;
+  ErrorMaterialStream({required this.message});
+}
+
+class GetMaterial extends MaterialEvent {
+  final List<MaterialModel> data;
+  GetMaterial({required this.data});
+}
 
 class AddMaterial extends MaterialEvent {
   final Map<String, dynamic> data;
