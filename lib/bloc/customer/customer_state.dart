@@ -17,4 +17,12 @@ final class CustomerUpdateSuccess extends CustomerState {}
 
 final class CustomerDeleteSuccess extends CustomerState {}
 
-final class CustomerError extends CustomerState {}
+class CustomerActionError extends CustomerState {
+  final String message;
+  CustomerActionError(this.message);
+}
+
+class CustomerStreamErrorState extends CustomerState {
+  final String message;
+  CustomerStreamErrorState(this.message);
+}

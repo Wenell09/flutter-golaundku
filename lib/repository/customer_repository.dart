@@ -21,15 +21,14 @@ class CustomerRepository {
     }
   }
 
-  Future<List<CustomerModel>> getCustomer() async {
-    try {
-      final response = await supabase.from("customers").select();
-      debugPrint("result get customers:$response");
-      return response.map((e) => CustomerModel.fromJson(e)).toList();
-    } catch (e) {
-      debugPrint("error get customer:$e");
-      throw Exception("error get customer:$e");
-    }
+  Stream<List<CustomerModel>> streamCustomers() {
+    return supabase
+        .from('customers')
+        .stream(primaryKey: ['customer_id'])
+        .map((data) => data.map((e) => CustomerModel.fromJson(e)).toList())
+        .handleError((error) {
+          throw Exception("Stream customer error: $error");
+        });
   }
 
   Future<void> updateCustomer(Map<String, dynamic> data) async {

@@ -14,7 +14,7 @@ class _CustomerPageState extends State<CustomerPage> {
   late TextEditingController inputSearchCustomer;
   @override
   void initState() {
-    context.read<CustomerBloc>().add(GetCustomer());
+    context.read<CustomerBloc>().add(StartCustomerStream());
     inputSearchCustomer = TextEditingController();
     super.initState();
   }
@@ -35,8 +35,10 @@ class _CustomerPageState extends State<CustomerPage> {
           showSnackBarWidget(context, "Berhasil update customer!");
         } else if (state is CustomerDeleteSuccess) {
           showSnackBarWidget(context, "Berhasil menghapus customer!");
-        } else if (state is CustomerError) {
-          context.read<CustomerBloc>().add(GetCustomer());
+        } else if (state is CustomerActionError) {
+          showSnackBarWidget(context, state.message);
+        } else if (state is CustomerStreamError) {
+          showSnackBarWidget(context, "Koneksi realtime bermasalah");
         }
       },
       child: ListView(
@@ -58,16 +60,19 @@ class _CustomerPageState extends State<CustomerPage> {
           ),
           const SizedBox(height: 20),
           BlocBuilder<CustomerBloc, CustomerState>(
+            buildWhen: (previous, current) {
+              return current is CustomerLoaded || current is CustomerLoading;
+            },
             builder: (context, state) {
               if (state is CustomerLoading) {
                 return Center(child: CircularProgressIndicator());
-              } else if (state is CustomerLoaded) {
+              }
+              if (state is CustomerLoaded) {
                 if (state.customerData.isEmpty) {
                   return SizedBox(
                     height: MediaQuery.of(context).size.height / 2,
                     child: Column(
-                      mainAxisAlignment: .center,
-                      crossAxisAlignment: .center,
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Icon(
                           Icons.warning,
@@ -85,6 +90,7 @@ class _CustomerPageState extends State<CustomerPage> {
                 return ListView.builder(
                   physics: ScrollPhysics(),
                   shrinkWrap: true,
+                  itemCount: state.customerData.length,
                   itemBuilder: (context, index) {
                     final data = state.customerData[index];
                     return Card(
@@ -92,7 +98,7 @@ class _CustomerPageState extends State<CustomerPage> {
                         padding: const EdgeInsets.all(10),
                         child: Column(
                           spacing: 10,
-                          crossAxisAlignment: .start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Row(
                               children: [
@@ -122,52 +128,14 @@ class _CustomerPageState extends State<CustomerPage> {
                                           ),
                                     );
                                   },
-                                  icon: Icon(
-                                    Icons.edit,
-                                    size: 20,
-                                    color: Theme.of(
-                                      context,
-                                    ).colorScheme.primary,
-                                  ),
+                                  icon: Icon(Icons.edit, size: 20),
                                 ),
                                 IconButton(
                                   onPressed: () {
-                                    showDialog(
-                                      context: context,
-                                      builder: (context) {
-                                        return AlertDialog(
-                                          title: const Text("Hapus Customer"),
-                                          content: const Text(
-                                            "Apakah kamu yakin ingin menghapus customer ini?",
-                                          ),
-                                          actions: [
-                                            TextButton(
-                                              onPressed: () =>
-                                                  Navigator.of(context).pop(),
-                                              child: const Text("Batal"),
-                                            ),
-                                            FilledButton(
-                                              onPressed: () {
-                                                Navigator.of(context).pop();
-                                                context
-                                                    .read<CustomerBloc>()
-                                                    .add(
-                                                      DeleteCustomer(
-                                                        customerId:
-                                                            data.customerId,
-                                                      ),
-                                                    );
-                                              },
-                                              style: FilledButton.styleFrom(
-                                                backgroundColor: Theme.of(
-                                                  context,
-                                                ).colorScheme.error,
-                                              ),
-                                              child: const Text("Hapus"),
-                                            ),
-                                          ],
-                                        );
-                                      },
+                                    context.read<CustomerBloc>().add(
+                                      DeleteCustomer(
+                                        customerId: data.customerId,
+                                      ),
                                     );
                                   },
                                   icon: Icon(
@@ -183,44 +151,16 @@ class _CustomerPageState extends State<CustomerPage> {
                               children: [
                                 Row(
                                   children: [
-                                    Icon(
-                                      Icons.phone,
-                                      size: 20,
-                                      color: Theme.of(
-                                        context,
-                                      ).colorScheme.primary,
-                                    ),
+                                    Icon(Icons.phone, size: 20),
                                     const SizedBox(width: 5),
-                                    Text(
-                                      data.phone.toString(),
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .bodyMedium!
-                                          .copyWith(
-                                            fontWeight: FontWeight.w500,
-                                          ),
-                                    ),
+                                    Text(data.phone),
                                   ],
                                 ),
                                 Row(
                                   children: [
-                                    Icon(
-                                      Icons.location_on,
-                                      size: 20,
-                                      color: Theme.of(
-                                        context,
-                                      ).colorScheme.primary,
-                                    ),
+                                    Icon(Icons.location_on, size: 20),
                                     const SizedBox(width: 5),
-                                    Text(
-                                      data.address,
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .bodyMedium!
-                                          .copyWith(
-                                            fontWeight: FontWeight.w500,
-                                          ),
-                                    ),
+                                    Text(data.address),
                                   ],
                                 ),
                               ],
@@ -230,10 +170,9 @@ class _CustomerPageState extends State<CustomerPage> {
                       ),
                     );
                   },
-                  itemCount: state.customerData.length,
                 );
               }
-              return Container();
+              return SizedBox();
             },
           ),
         ],

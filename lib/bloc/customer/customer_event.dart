@@ -2,7 +2,17 @@ part of 'customer_bloc.dart';
 
 class CustomerEvent {}
 
-class GetCustomer extends CustomerEvent {}
+class StartCustomerStream extends CustomerEvent {}
+
+class CustomerStreamError extends CustomerEvent {
+  final String message;
+  CustomerStreamError(this.message);
+}
+
+class GetCustomer extends CustomerEvent {
+  final List<CustomerModel> data;
+  GetCustomer(this.data);
+}
 
 class AddCustomer extends CustomerEvent {
   final Map<String, dynamic> data;

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bloc/bloc.dart';
 import 'package:flutter_golaundku/models/customer_model.dart';
 import 'package:flutter_golaundku/repository/customer_repository.dart';
@@ -7,49 +9,51 @@ part 'customer_state.dart';
 
 class CustomerBloc extends Bloc<CustomerEvent, CustomerState> {
   final CustomerRepository customerRepository;
+  StreamSubscription<List<CustomerModel>>? _subscription;
+  List<CustomerModel> allCustomer = [];
   CustomerBloc(this.customerRepository) : super(CustomerInitial()) {
-    List<CustomerModel> allCustomer = [];
-    on<GetCustomer>((event, emit) async {
+    on<StartCustomerStream>((event, emit) async {
       emit(CustomerLoading());
-      try {
-        final customerData = await customerRepository.getCustomer();
-        allCustomer = customerData;
-        emit(CustomerLoaded(customerData: allCustomer));
-      } catch (e) {
-        emit(CustomerError());
-      }
+      await _subscription?.cancel();
+      _subscription = customerRepository.streamCustomers().listen(
+        (data) {
+          add(GetCustomer(data));
+        },
+        onError: (error) {
+          add(CustomerStreamError(error.toString()));
+        },
+      );
+    });
+
+    on<GetCustomer>((event, emit) {
+      allCustomer = event.data;
+      emit(CustomerLoaded(customerData: allCustomer));
     });
 
     on<AddCustomer>((event, emit) async {
-      emit(CustomerLoading());
       try {
         await customerRepository.addCustomer(event.data);
         emit(CustomerAddSuccess());
-        add(GetCustomer());
       } catch (e) {
-        emit(CustomerError());
+        emit(CustomerActionError("Gagal menambahkan customer"));
       }
     });
 
     on<UpdateCustomer>((event, emit) async {
-      emit(CustomerLoading());
       try {
         await customerRepository.updateCustomer(event.data);
         emit(CustomerUpdateSuccess());
-        add(GetCustomer());
       } catch (e) {
-        emit(CustomerError());
+        emit(CustomerActionError("Gagal mengupdate customer"));
       }
     });
 
     on<DeleteCustomer>((event, emit) async {
-      emit(CustomerLoading());
       try {
         await customerRepository.deleteCustomer(event.customerId);
         emit(CustomerDeleteSuccess());
-        add(GetCustomer());
       } catch (e) {
-        emit(CustomerError());
+        emit(CustomerActionError("Gagal menghapus customer"));
       }
     });
 
@@ -64,5 +68,11 @@ class CustomerBloc extends Bloc<CustomerEvent, CustomerState> {
       }).toList();
       emit(CustomerLoaded(customerData: filtered));
     });
+  }
+
+  @override
+  Future<void> close() {
+    _subscription?.cancel();
+    return super.close();
   }
 }
