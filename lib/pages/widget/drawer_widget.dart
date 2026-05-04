@@ -36,12 +36,12 @@ class DrawerWidget extends StatelessWidget {
                             label: Text("Dashboard"),
                           ),
                           NavigationDrawerDestination(
-                            icon: Icon(Icons.assignment),
-                            label: Text("Daftar Order"),
-                          ),
-                          NavigationDrawerDestination(
                             icon: Icon(Icons.add_circle),
                             label: Text("Input Order"),
+                          ),
+                          NavigationDrawerDestination(
+                            icon: Icon(Icons.assignment),
+                            label: Text("Daftar Order"),
                           ),
                           NavigationDrawerDestination(
                             icon: Icon(Icons.money),

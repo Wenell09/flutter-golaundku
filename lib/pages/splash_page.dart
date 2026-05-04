@@ -25,9 +25,13 @@ class SplashPage extends StatelessWidget {
         ),
         BlocListener<UserBloc, UserState>(
           listener: (context, state) {
-            Navigator.of(context).pushReplacement(
-              MaterialPageRoute(builder: (context) => MainPage()),
-            );
+            if (state is UserLoaded) {
+              Navigator.of(context).pushReplacement(
+                MaterialPageRoute(
+                  builder: (context) => MainPage(userId: state.userData.userId),
+                ),
+              );
+            }
           },
         ),
       ],

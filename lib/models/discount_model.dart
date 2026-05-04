@@ -12,6 +12,7 @@ class DiscountModel {
     required this.value,
     required this.active,
   });
+  bool get isPercentage => type == "percentage";
 
   factory DiscountModel.fromJson(Map<String, dynamic> json) {
     return DiscountModel(
@@ -21,5 +22,10 @@ class DiscountModel {
       value: json["value"] ?? 0,
       active: json["active"] ?? false,
     );
+  }
+
+  @override
+  String toString() {
+    return 'Discount(id: $discountId, name: $name)';
   }
 }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_golaundku/bloc/auth/auth_bloc.dart';
+import 'package:flutter_golaundku/bloc/bloc/order_bloc.dart';
 import 'package:flutter_golaundku/bloc/customer/customer_bloc.dart';
 import 'package:flutter_golaundku/bloc/discount/discount_bloc.dart';
 import 'package:flutter_golaundku/bloc/material/material_bloc.dart';
@@ -11,11 +12,13 @@ import 'package:flutter_golaundku/bloc/service/service_bloc.dart';
 import 'package:flutter_golaundku/bloc/user/user_bloc.dart';
 import 'package:flutter_golaundku/config/supabase/supabase_config.dart';
 import 'package:flutter_golaundku/config/theme/app_theme.dart';
+import 'package:flutter_golaundku/cubit/input_order_cubit.dart';
 import 'package:flutter_golaundku/pages/splash_page.dart';
 import 'package:flutter_golaundku/repository/auth_repository.dart';
 import 'package:flutter_golaundku/repository/customer_repository.dart';
 import 'package:flutter_golaundku/repository/discount_repository.dart';
 import 'package:flutter_golaundku/repository/material_repository.dart';
+import 'package:flutter_golaundku/repository/order_repository.dart';
 import 'package:flutter_golaundku/repository/service_repository.dart';
 import 'package:flutter_golaundku/repository/user_repository.dart';
 
@@ -35,6 +38,8 @@ void main() async {
         BlocProvider(create: (context) => CustomerBloc(CustomerRepository())),
         BlocProvider(create: (context) => MaterialBloc(MaterialRepository())),
         BlocProvider(create: (context) => DiscountBloc(DiscountRepository())),
+        BlocProvider(create: (context) => OrderBloc(OrderRepository())),
+        BlocProvider(create: (context) => InputOrderCubit()),
         BlocProvider(create: (context) => NavigationBloc()),
         BlocProvider(create: (context) => SaveUserIdBloc()..add(LoadUserId())),
       ],

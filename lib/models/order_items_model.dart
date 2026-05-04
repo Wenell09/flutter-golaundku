@@ -2,9 +2,10 @@ class OrderItemsModel {
   final String orderItemId;
   final String orderId;
   final String serviceId;
-  final num quantity;
+  final double quantity;
   final int pricePerUnit;
   final int subTotal;
+  final bool deliveryStatus;
 
   OrderItemsModel({
     required this.orderItemId,
@@ -13,16 +14,18 @@ class OrderItemsModel {
     required this.quantity,
     required this.pricePerUnit,
     required this.subTotal,
+    required this.deliveryStatus,
   });
 
-  factory OrderItemsModel.fromJson(Map<String, dynamic> data) {
+  factory OrderItemsModel.fromJson(Map<String, dynamic> json) {
     return OrderItemsModel(
-      orderItemId: data["order_item_id"] ?? "",
-      orderId: data["order_id"] ?? "",
-      serviceId: data["service_id"] ?? "",
-      quantity: data["quantity"] ?? 0,
-      pricePerUnit: data["price_per_unit"] ?? 0,
-      subTotal: data["sub_total"] ?? 0,
+      orderItemId: json["order_item_id"] ?? "",
+      orderId: json["order_id"] ?? "",
+      serviceId: json["service_id"] ?? "",
+      quantity: (json["quantity"] ?? 0).toDouble(),
+      pricePerUnit: json["price_per_unit"] ?? 0,
+      subTotal: json["sub_total"] ?? 0,
+      deliveryStatus: json["delivery_status"] ?? false,
     );
   }
 }

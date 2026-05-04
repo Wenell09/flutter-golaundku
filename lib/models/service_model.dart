@@ -4,7 +4,7 @@ class ServiceModel {
   final String category;
   final int price;
   final String unit;
-  final num minWeight;
+  final int minWeight;
   final int duration;
 
   ServiceModel({
@@ -24,7 +24,7 @@ class ServiceModel {
       category: json["category"] ?? "",
       price: json["price"] ?? 0,
       unit: json["unit"] ?? "",
-      minWeight: json["min_weight"] ?? 0.0,
+      minWeight: json["min_weight"] ?? 0,
       duration: json["duration"] ?? 0,
     );
   }

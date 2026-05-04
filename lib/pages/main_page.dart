@@ -17,7 +17,8 @@ import 'package:flutter_golaundku/pages/widget/input_material_dialog_widget.dart
 import 'package:flutter_golaundku/pages/widget/input_service_dialog_widget.dart';
 
 class MainPage extends StatelessWidget {
-  const MainPage({super.key});
+  final String userId;
+  const MainPage({super.key, required this.userId});
 
   @override
   Widget build(BuildContext context) {
@@ -29,9 +30,9 @@ class MainPage extends StatelessWidget {
           drawer: const DrawerWidget(),
           body: IndexedStack(
             index: state.currentIndex,
-            children: const [
+            children: [
               DashboardPage(),
-              InputOrderPage(),
+              InputOrderPage(userId: userId),
               OrderListPage(),
               PaymentPage(),
               ReportPage(),

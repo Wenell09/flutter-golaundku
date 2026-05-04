@@ -3,8 +3,8 @@ class OrderModel {
   final String customerId;
   final String userId;
   final String discountId;
-  final String orderDate;
-  final String estimatedDate;
+  final DateTime orderDate;
+  final DateTime estimatedDate;
   final int totalPrice;
   final String status;
   final String paymentStatus;
@@ -31,8 +31,8 @@ class OrderModel {
       customerId: json["customer_id"] ?? "",
       userId: json["user_id"] ?? "",
       discountId: json["discount_id"] ?? "",
-      orderDate: json["order_date"] ?? "",
-      estimatedDate: json["estimated_date"] ?? "",
+      orderDate: DateTime.parse(json["order_date"]),
+      estimatedDate: DateTime.parse(json["estimated_date"]),
       totalPrice: json["total_price"] ?? 0,
       status: json["status"] ?? "",
       paymentStatus: json["payment_status"] ?? "",

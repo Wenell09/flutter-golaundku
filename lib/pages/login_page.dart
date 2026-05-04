@@ -115,7 +115,9 @@ class _LoginPageState extends State<LoginPage> {
                 );
                 context.read<UserBloc>().add(GetUser(userId: state.userId));
                 Navigator.of(context).pushReplacement(
-                  MaterialPageRoute(builder: (context) => MainPage()),
+                  MaterialPageRoute(
+                    builder: (context) => MainPage(userId: state.userId),
+                  ),
                 );
               } else if (state is AuthError) {
                 showDialog(
