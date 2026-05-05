@@ -2,11 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_golaundku/bloc/auth/auth_bloc.dart';
-import 'package:flutter_golaundku/bloc/bloc/order_bloc.dart';
 import 'package:flutter_golaundku/bloc/customer/customer_bloc.dart';
+import 'package:flutter_golaundku/bloc/detail_order/detail_order_bloc.dart';
 import 'package:flutter_golaundku/bloc/discount/discount_bloc.dart';
 import 'package:flutter_golaundku/bloc/material/material_bloc.dart';
 import 'package:flutter_golaundku/bloc/navigation/navigation_bloc.dart';
+import 'package:flutter_golaundku/bloc/order/order_bloc.dart';
 import 'package:flutter_golaundku/bloc/save_userId/save_user_id_bloc.dart';
 import 'package:flutter_golaundku/bloc/service/service_bloc.dart';
 import 'package:flutter_golaundku/bloc/user/user_bloc.dart';
@@ -47,6 +48,7 @@ void main() async {
             DiscountRepository(),
           ),
         ),
+        BlocProvider(create: (context) => DetailOrderBloc(OrderRepository())),
         BlocProvider(create: (context) => InputOrderCubit()),
         BlocProvider(create: (context) => NavigationBloc()),
         BlocProvider(create: (context) => SaveUserIdBloc()..add(LoadUserId())),

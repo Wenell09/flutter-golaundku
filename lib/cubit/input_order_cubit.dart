@@ -115,7 +115,7 @@ class InputOrderCubit extends Cubit<InputOrderState> {
   }
 
   void selectDiscount(DiscountModel? discount) {
-    emit(state.copyWith(selectedDiscount: discount));
+    emit(state.copyWith(selectedDiscount: discount, isDiscountChanged: true));
   }
 
   void addFormItem() {

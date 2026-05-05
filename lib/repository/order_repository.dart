@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_golaundku/models/order_header.dart';
 import 'package:flutter_golaundku/models/order_item.dart';
+import 'package:flutter_golaundku/models/order_items_model.dart';
 import 'package:flutter_golaundku/models/order_model.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -34,6 +35,34 @@ class OrderRepository {
         .handleError((error) {
           throw Exception("Stream order error: $error");
         });
+  }
+
+  Future<List<OrderItemsModel>> getDetailOrder(String orderId) async {
+    try {
+      final result = await supabase
+          .from("order_items")
+          .select("*")
+          .eq("order_id", orderId);
+      return result.map((e) => OrderItemsModel.fromJson(e)).toList();
+    } catch (e) {
+      debugPrint("error get detail order:$e");
+      throw Exception("error get detail order:$e");
+    }
+  }
+
+  Future<void> updateStatusDeliveryOrder(
+    String orderItemId,
+    bool deliveryStatus,
+  ) async {
+    try {
+      await supabase
+          .from("order_items")
+          .update({"delivery_status": deliveryStatus})
+          .eq("order_id", orderItemId);
+    } catch (e) {
+      debugPrint("error update delivery status order:$e");
+      throw Exception("error update delivery status order:$e");
+    }
   }
 
   Future<void> updateStatusOrder(String orderId, String status) async {

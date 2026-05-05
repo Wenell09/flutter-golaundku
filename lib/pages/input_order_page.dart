@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_golaundku/bloc/bloc/order_bloc.dart';
 import 'package:flutter_golaundku/bloc/customer/customer_bloc.dart';
 import 'package:flutter_golaundku/bloc/discount/discount_bloc.dart';
+import 'package:flutter_golaundku/bloc/order/order_bloc.dart';
 import 'package:flutter_golaundku/bloc/service/service_bloc.dart';
 import 'package:flutter_golaundku/cubit/input_order_cubit.dart';
 import 'package:flutter_golaundku/helpers/helper.dart';
@@ -400,7 +400,7 @@ class _InputOrderPageState extends State<InputOrderPage> {
                             BlocBuilder<ServiceBloc, ServiceState>(
                               builder: (context, serviceState) {
                                 if (serviceState is! ServiceLoaded) {
-                                  return const SizedBox(); // atau loading
+                                  return const SizedBox();
                                 }
                                 return BlocBuilder<
                                   InputOrderCubit,
@@ -446,7 +446,7 @@ class _InputOrderPageState extends State<InputOrderPage> {
                                                   ),
                                             ),
                                             Text(
-                                              "Rp $subtotal",
+                                              Helper.formatRupiah(subtotal),
                                               style: TextTheme.of(context)
                                                   .bodyMedium!
                                                   .copyWith(
@@ -478,8 +478,10 @@ class _InputOrderPageState extends State<InputOrderPage> {
                                                             .selectedDiscount!
                                                             .type ==
                                                         "percentage"
-                                                  ? "${state.selectedDiscount!.value}% (-Rp $discountAmount)"
-                                                  : "Rp $discountAmount",
+                                                  ? "${state.selectedDiscount!.value}% ${Helper.formatRupiah(discountAmount)}"
+                                                  : Helper.formatRupiah(
+                                                      discountAmount,
+                                                    ),
                                               style: TextTheme.of(context)
                                                   .bodyMedium!
                                                   .copyWith(
@@ -505,7 +507,7 @@ class _InputOrderPageState extends State<InputOrderPage> {
                                                   ),
                                             ),
                                             Text(
-                                              "Rp $totalTagihan",
+                                              Helper.formatRupiah(totalTagihan),
                                               style: TextTheme.of(context)
                                                   .bodyMedium!
                                                   .copyWith(

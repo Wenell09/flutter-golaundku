@@ -31,6 +31,11 @@ class DiscountRepository {
         });
   }
 
+  Future<List<DiscountModel>> getDiscounts() async {
+    final result = await supabase.from("discounts").select();
+    return result.map((e) => DiscountModel.fromJson(e)).toList();
+  }
+
   Future<void> updateDiscount(Map<String, dynamic> data) async {
     try {
       await supabase

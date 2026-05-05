@@ -24,7 +24,7 @@ class OrderItemsModel {
       serviceId: json["service_id"] ?? "",
       quantity: (json["quantity"] ?? 0).toDouble(),
       pricePerUnit: json["price_per_unit"] ?? 0,
-      subTotal: json["sub_total"] ?? 0,
+      subTotal: json["subtotal"] ?? 0,
       deliveryStatus: json["delivery_status"] ?? false,
     );
   }

@@ -18,8 +18,8 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
   final CustomerRepository customerRepository;
   final DiscountRepository discountRepository;
   StreamSubscription<List<OrderModel>>? _subscription;
-  StreamSubscription<List<CustomerModel>>? _customerSub;
-  StreamSubscription<List<DiscountModel>>? _discountSub;
+  late Map<String, CustomerModel> _customerMap;
+  late Map<String, DiscountModel> _discountMap;
   List<CustomerModel> _customers = [];
   List<DiscountModel> _discounts = [];
   List<OrderModel> allOrder = [];
@@ -31,30 +31,28 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
     on<StartOrderStream>((event, emit) async {
       emit(OrderLoading());
       await _subscription?.cancel();
-      await _customerSub?.cancel();
-      await _discountSub?.cancel();
-      _subscription = orderRepository.streamOrders().listen(
-        (data) {
-          add(GetOrder(data: data));
-        },
-        onError: (error) {
-          add(ErrorOrderStream(message: error.toString()));
-        },
-      );
-      _customerSub = customerRepository.streamCustomers().listen((data) {
-        _customers = data;
-      });
-      _discountSub = discountRepository.streamDiscounts().listen((data) {
-        _discounts = data;
-      });
+      try {
+        _customers = await customerRepository.getCustomers();
+        _discounts = await discountRepository.getDiscounts();
+        _customerMap = {for (var c in _customers) c.customerId: c};
+        _discountMap = {for (var d in _discounts) d.discountId: d};
+        _subscription = orderRepository.streamOrders().listen(
+          (orders) {
+            add(GetOrder(data: orders));
+          },
+          onError: (error) {
+            add(ErrorOrderStream(message: error.toString()));
+          },
+        );
+      } catch (e) {
+        emit(OrderActionError(message: "Gagal load master data"));
+      }
     });
 
     on<GetOrder>((event, emit) {
-      final customerMap = {for (var c in _customers) c.customerId: c};
-      final discountMap = {for (var d in _discounts) d.discountId: d};
       final mappedOrders = event.data.map((order) {
-        final customer = customerMap[order.customerId];
-        final discount = discountMap[order.discountId];
+        final customer = _customerMap[order.customerId];
+        final discount = _discountMap[order.discountId];
         return order.copyWith(customerModel: customer, discountModel: discount);
       }).toList();
       allOrder = mappedOrders;

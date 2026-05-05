@@ -3,6 +3,16 @@ import 'package:flutter_golaundku/models/order_item.dart';
 import 'package:intl/intl.dart';
 
 class Helper {
+  static final _formatter = NumberFormat.currency(
+    locale: 'id_ID',
+    symbol: 'Rp ',
+    decimalDigits: 0,
+  );
+
+  static String formatRupiah(int value) {
+    return _formatter.format(value);
+  }
+
   static String toIndoDate(DateTime date) {
     return DateFormat('dd-MM-yyyy').format(date);
   }
@@ -16,26 +26,27 @@ class Helper {
     DiscountModel? discount,
   }) {
     if (discount == null) return 0;
-
+    int discountAmount = 0;
     if (discount.type == "percentage") {
-      return (subtotal * discount.value / 100).round();
+      discountAmount = (subtotal * discount.value / 100).round();
     } else {
-      return discount.value;
+      discountAmount = discount.value;
     }
+    if (discountAmount > subtotal) {
+      discountAmount = subtotal;
+    }
+    return discountAmount;
   }
 
   int calculateTotal({
     required List<OrderItem> items,
     DiscountModel? discount,
   }) {
-    final grossTotal = items.fold(0, (sum, item) => sum + item.subtotal);
-    if (discount == null) return grossTotal;
-    int discountAmount = 0;
-    if (discount.type == "percentage") {
-      discountAmount = (grossTotal * discount.value / 100).round();
-    } else {
-      discountAmount = discount.value;
-    }
-    return grossTotal - discountAmount;
+    final subtotal = calculateSubtotal(items);
+    final discountAmount = calculateDiscountAmount(
+      subtotal: subtotal,
+      discount: discount,
+    );
+    return subtotal - discountAmount;
   }
 }

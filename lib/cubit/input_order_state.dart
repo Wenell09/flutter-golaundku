@@ -27,12 +27,15 @@ class InputOrderState {
     String? berat,
     List<ServiceFormItem>? formItems,
     String? catatan,
+    bool isDiscountChanged = false,
   }) {
     return InputOrderState(
       selectedCustomer: selectedCustomer ?? this.selectedCustomer,
       selectedKiloan: selectedKiloan ?? this.selectedKiloan,
       selectedPayment: selectedPayment ?? this.selectedPayment,
-      selectedDiscount: selectedDiscount ?? this.selectedDiscount,
+      selectedDiscount: isDiscountChanged
+          ? selectedDiscount
+          : this.selectedDiscount,
       berat: berat ?? this.berat,
       formItems: formItems ?? this.formItems,
       catatan: catatan ?? this.catatan,

@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_golaundku/bloc/bloc/order_bloc.dart';
+import 'package:flutter_golaundku/bloc/order/order_bloc.dart';
 import 'package:flutter_golaundku/helpers/helper.dart';
+import 'package:flutter_golaundku/pages/detail_order_page.dart';
 
 class OrderListPage extends StatefulWidget {
   const OrderListPage({super.key});
@@ -31,7 +32,9 @@ class _OrderListPageState extends State<OrderListPage> {
       padding: EdgeInsets.all(15),
       children: [
         TextField(
-          onChanged: (value) {},
+          onChanged: (value) {
+            context.read<OrderBloc>().add(SearchOrder(keyword: value));
+          },
           decoration: InputDecoration(
             filled: true,
             prefixIcon: Icon(Icons.search),
@@ -74,119 +77,129 @@ class _OrderListPageState extends State<OrderListPage> {
                 shrinkWrap: true,
                 itemBuilder: (context, index) {
                   final data = state.orderData[index];
-                  return Card(
-                    child: Padding(
-                      padding: EdgeInsets.all(10),
-                      child: Column(
-                        spacing: 5,
-                        crossAxisAlignment: .start,
-                        children: [
-                          Row(
-                            mainAxisAlignment: .spaceBetween,
-                            children: [
-                              Text(
-                                data.orderId,
-                                style: TextTheme.of(context).bodyMedium!
-                                    .copyWith(
-                                      fontWeight: FontWeight.bold,
+                  return GestureDetector(
+                    onTap: () => Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => DetailOrderPage(orderModel: data),
+                      ),
+                    ),
+                    child: Card(
+                      child: Padding(
+                        padding: EdgeInsets.all(10),
+                        child: Column(
+                          spacing: 5,
+                          crossAxisAlignment: .start,
+                          children: [
+                            Row(
+                              mainAxisAlignment: .spaceBetween,
+                              children: [
+                                Text(
+                                  data.orderId,
+                                  style: TextTheme.of(context).bodyMedium!
+                                      .copyWith(
+                                        fontWeight: FontWeight.bold,
+                                        color: Theme.of(
+                                          context,
+                                        ).colorScheme.primary,
+                                      ),
+                                ),
+                                PopupMenuButton<String>(
+                                  onSelected: (value) {
+                                    context.read<OrderBloc>().add(
+                                      UpdateStatusOrder(
+                                        orderId: data.orderId,
+                                        status: value,
+                                      ),
+                                    );
+                                  },
+                                  itemBuilder: (context) => [
+                                    _buildStatusItem("Masuk"),
+                                    _buildStatusItem("Diproses"),
+                                    _buildStatusItem("Selesai"),
+                                    _buildStatusItem("Diantar"),
+                                  ],
+                                  child: Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 12,
+                                      vertical: 8,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: getStatusColor(
+                                        data.status,
+                                      ).withValues(alpha: 0.10),
+                                      borderRadius: BorderRadius.circular(10),
+                                      border: Border.all(
+                                        color: getStatusColor(data.status),
+                                      ),
+                                    ),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Text(
+                                          data.status,
+                                          style: TextStyle(
+                                            color: getStatusColor(data.status),
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                        const SizedBox(width: 5),
+                                        Icon(
+                                          Icons.arrow_drop_down,
+                                          size: 18,
+                                          color: getStatusColor(data.status),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            Text(
+                              data.customerModel!.name,
+                              style: TextTheme.of(context).bodyLarge!.copyWith(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            Divider(),
+                            Row(
+                              mainAxisAlignment: .spaceBetween,
+                              children: [
+                                Row(
+                                  children: [
+                                    Icon(
+                                      Icons.date_range,
+                                      size: 15,
                                       color: Theme.of(
                                         context,
                                       ).colorScheme.primary,
                                     ),
-                              ),
-                              PopupMenuButton<String>(
-                                onSelected: (value) {
-                                  context.read<OrderBloc>().add(
-                                    UpdateStatusOrder(
-                                      orderId: data.orderId,
-                                      status: value,
+                                    Text(
+                                      "Masuk: ${Helper.toIndoDate(data.orderDate)}",
                                     ),
-                                  );
-                                },
-                                itemBuilder: (context) => [
-                                  _buildStatusItem("Masuk"),
-                                  _buildStatusItem("Diproses"),
-                                  _buildStatusItem("Selesai"),
-                                  _buildStatusItem("Diantar"),
-                                ],
-                                child: Container(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 12,
-                                    vertical: 8,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: getStatusColor(
-                                      data.status,
-                                    ).withValues(alpha: 0.10),
-                                    borderRadius: BorderRadius.circular(10),
-                                    border: Border.all(
-                                      color: getStatusColor(data.status),
-                                    ),
-                                  ),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Text(
-                                        data.status,
-                                        style: TextStyle(
-                                          color: getStatusColor(data.status),
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                      const SizedBox(width: 5),
-                                      Icon(
-                                        Icons.arrow_drop_down,
-                                        size: 18,
-                                        color: getStatusColor(data.status),
-                                      ),
-                                    ],
-                                  ),
+                                    // Text(
+                                    //   "Masuk: ${Helper.toIndoDate(data.orderDate)}",
+                                    // ),
+                                  ],
                                 ),
-                              ),
-                            ],
-                          ),
-                          Text(
-                            data.customerModel!.name,
-                            style: TextTheme.of(
-                              context,
-                            ).bodyLarge!.copyWith(fontWeight: FontWeight.bold),
-                          ),
-                          Divider(),
-                          Row(
-                            mainAxisAlignment: .spaceBetween,
-                            children: [
-                              Row(
-                                children: [
-                                  Icon(
-                                    Icons.date_range,
-                                    size: 15,
-                                    color: Theme.of(
-                                      context,
-                                    ).colorScheme.primary,
-                                  ),
-                                  Text(
-                                    "Masuk: ${Helper.toIndoDate(data.orderDate)}",
-                                  ),
-                                  // Text(
-                                  //   "Masuk: ${Helper.toIndoDate(data.orderDate)}",
-                                  // ),
-                                ],
-                              ),
-                              Row(
-                                children: [
-                                  Icon(
-                                    Icons.timer,
-                                    size: 15,
-                                    color: Theme.of(context).colorScheme.error,
-                                  ),
-                                  Text(
-                                    "Estimasi: ${Helper.toIndoDate(data.estimatedDate)}",
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ],
+                                Row(
+                                  children: [
+                                    Icon(
+                                      Icons.timer,
+                                      size: 15,
+                                      color: Theme.of(
+                                        context,
+                                      ).colorScheme.error,
+                                    ),
+                                    Text(
+                                      "Estimasi: ${Helper.toIndoDate(data.estimatedDate)}",
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   );

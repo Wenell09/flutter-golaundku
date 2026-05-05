@@ -31,6 +31,11 @@ class CustomerRepository {
         });
   }
 
+  Future<List<CustomerModel>> getCustomers() async {
+    final result = await supabase.from("customers").select();
+    return result.map((e) => CustomerModel.fromJson(e)).toList();
+  }
+
   Future<void> updateCustomer(Map<String, dynamic> data) async {
     try {
       await supabase
