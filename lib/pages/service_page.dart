@@ -45,6 +45,7 @@ class _ServicePageState extends State<ServicePage> {
         padding: EdgeInsets.all(15),
         children: [
           TextField(
+            controller: inputSearchLayanan,
             onChanged: (value) {
               context.read<ServiceBloc>().add(SearchService(value));
             },

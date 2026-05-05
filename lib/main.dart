@@ -21,9 +21,11 @@ import 'package:flutter_golaundku/repository/material_repository.dart';
 import 'package:flutter_golaundku/repository/order_repository.dart';
 import 'package:flutter_golaundku/repository/service_repository.dart';
 import 'package:flutter_golaundku/repository/user_repository.dart';
+import 'package:intl/date_symbol_data_local.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await initializeDateFormatting('id_ID', null);
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
@@ -38,7 +40,13 @@ void main() async {
         BlocProvider(create: (context) => CustomerBloc(CustomerRepository())),
         BlocProvider(create: (context) => MaterialBloc(MaterialRepository())),
         BlocProvider(create: (context) => DiscountBloc(DiscountRepository())),
-        BlocProvider(create: (context) => OrderBloc(OrderRepository())),
+        BlocProvider(
+          create: (context) => OrderBloc(
+            OrderRepository(),
+            CustomerRepository(),
+            DiscountRepository(),
+          ),
+        ),
         BlocProvider(create: (context) => InputOrderCubit()),
         BlocProvider(create: (context) => NavigationBloc()),
         BlocProvider(create: (context) => SaveUserIdBloc()..add(LoadUserId())),

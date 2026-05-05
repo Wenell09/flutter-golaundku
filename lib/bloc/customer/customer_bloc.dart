@@ -63,8 +63,8 @@ class CustomerBloc extends Bloc<CustomerEvent, CustomerState> {
         emit(CustomerLoaded(customerData: allCustomer));
         return;
       }
-      final filtered = allCustomer.where((service) {
-        return service.name.toLowerCase().contains(keyword);
+      final filtered = allCustomer.where((data) {
+        return data.name.toLowerCase().contains(keyword);
       }).toList();
       emit(CustomerLoaded(customerData: filtered));
     });

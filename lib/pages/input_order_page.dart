@@ -18,16 +18,19 @@ class InputOrderPage extends StatefulWidget {
 
 class _InputOrderPageState extends State<InputOrderPage> {
   late TextEditingController inputBerat;
+  late TextEditingController inputNotes;
 
   @override
   void initState() {
     inputBerat = TextEditingController();
+    inputNotes = TextEditingController();
     super.initState();
   }
 
   @override
   void dispose() {
     inputBerat.dispose();
+    inputNotes.dispose();
     super.dispose();
   }
 
@@ -299,47 +302,6 @@ class _InputOrderPageState extends State<InputOrderPage> {
                                   ),
                             ),
                             const SizedBox(height: 10),
-                            BlocBuilder<DiscountBloc, DiscountState>(
-                              builder: (context, state) {
-                                if (state is DiscountLoaded) {
-                                  return DropdownButtonFormField(
-                                    initialValue:
-                                        formState.selectedDiscount?.discountId,
-                                    decoration: InputDecoration(
-                                      hintText: "Gunakan kode promo",
-                                      border: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(12),
-                                      ),
-                                    ),
-                                    items: [
-                                      const DropdownMenuItem<String>(
-                                        value: null,
-                                        child: Text("Tidak pilih"),
-                                      ),
-                                      ...state.discountData.map((data) {
-                                        return DropdownMenuItem(
-                                          value: data.discountId,
-                                          child: Text(data.name),
-                                        );
-                                      }),
-                                    ],
-                                    onChanged: (value) {
-                                      if (value == null) {
-                                        cubit.selectDiscount(null);
-                                      } else {
-                                        final discount = state.discountData
-                                            .firstWhere(
-                                              (e) => e.discountId == value,
-                                            );
-                                        cubit.selectDiscount(discount);
-                                      }
-                                    },
-                                  );
-                                }
-                                return const SizedBox();
-                              },
-                            ),
-                            const SizedBox(height: 10),
                             DropdownButtonFormField(
                               initialValue: formState.selectedPayment,
                               decoration: InputDecoration(
@@ -364,6 +326,198 @@ class _InputOrderPageState extends State<InputOrderPage> {
                               ],
                               onChanged: (value) {
                                 cubit.selectPaymentMethod(value);
+                              },
+                            ),
+                            const SizedBox(height: 10),
+                            BlocBuilder<DiscountBloc, DiscountState>(
+                              builder: (context, state) {
+                                if (state is DiscountLoaded) {
+                                  return DropdownButtonFormField(
+                                    initialValue:
+                                        formState.selectedDiscount?.discountId,
+                                    decoration: InputDecoration(
+                                      hintText: "Gunakan kode promo",
+                                      border: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
+                                    ),
+                                    items: [
+                                      const DropdownMenuItem<String>(
+                                        value: null,
+                                        child: Text("Tidak pilih"),
+                                      ),
+                                      ...state.discountData
+                                          .where(
+                                            (element) => element.active == true,
+                                          )
+                                          .map((data) {
+                                            return DropdownMenuItem(
+                                              value: data.discountId,
+                                              child: Text(data.name),
+                                            );
+                                          }),
+                                    ],
+                                    onChanged: (value) {
+                                      if (value == null) {
+                                        cubit.selectDiscount(null);
+                                      } else {
+                                        final discount = state.discountData
+                                            .firstWhere(
+                                              (e) => e.discountId == value,
+                                            );
+                                        cubit.selectDiscount(discount);
+                                      }
+                                    },
+                                  );
+                                }
+                                return const SizedBox();
+                              },
+                            ),
+                            const SizedBox(height: 20),
+                            Text(
+                              "5. CATATAN (OPSIONAL)",
+                              style: Theme.of(context).textTheme.bodyLarge!
+                                  .copyWith(
+                                    fontWeight: FontWeight.bold,
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.primary,
+                                  ),
+                            ),
+                            const SizedBox(height: 10),
+                            TextField(
+                              controller: inputNotes,
+                              keyboardType: TextInputType.text,
+                              onChanged: cubit.inputCatatan,
+                              decoration: InputDecoration(
+                                hintText: "Catatan pelanggan",
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 20),
+                            BlocBuilder<ServiceBloc, ServiceState>(
+                              builder: (context, serviceState) {
+                                if (serviceState is! ServiceLoaded) {
+                                  return const SizedBox(); // atau loading
+                                }
+                                return BlocBuilder<
+                                  InputOrderCubit,
+                                  InputOrderState
+                                >(
+                                  builder: (context, state) {
+                                    final cubit = context
+                                        .read<InputOrderCubit>();
+                                    final helper = Helper();
+
+                                    final items = cubit.buildOrderItems(
+                                      serviceState.serviceData,
+                                    );
+                                    final subtotal = helper.calculateSubtotal(
+                                      items,
+                                    );
+                                    final discountAmount = helper
+                                        .calculateDiscountAmount(
+                                          subtotal: subtotal,
+                                          discount: state.selectedDiscount,
+                                        );
+                                    final totalTagihan = helper.calculateTotal(
+                                      items: items,
+                                      discount: state.selectedDiscount,
+                                    );
+                                    return Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Text(
+                                              "Subtotal Harga:",
+                                              style: TextTheme.of(context)
+                                                  .bodyLarge!
+                                                  .copyWith(
+                                                    fontWeight: FontWeight.bold,
+                                                    color: Theme.of(
+                                                      context,
+                                                    ).colorScheme.primary,
+                                                  ),
+                                            ),
+                                            Text(
+                                              "Rp $subtotal",
+                                              style: TextTheme.of(context)
+                                                  .bodyMedium!
+                                                  .copyWith(
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                            ),
+                                          ],
+                                        ),
+                                        const SizedBox(height: 5),
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Text(
+                                              "Potongan Diskon:",
+                                              style: TextTheme.of(context)
+                                                  .bodyMedium!
+                                                  .copyWith(
+                                                    fontWeight: FontWeight.bold,
+                                                    color: Theme.of(
+                                                      context,
+                                                    ).colorScheme.primary,
+                                                  ),
+                                            ),
+                                            Text(
+                                              state.selectedDiscount == null
+                                                  ? "Rp 0"
+                                                  : state
+                                                            .selectedDiscount!
+                                                            .type ==
+                                                        "percentage"
+                                                  ? "${state.selectedDiscount!.value}% (-Rp $discountAmount)"
+                                                  : "Rp $discountAmount",
+                                              style: TextTheme.of(context)
+                                                  .bodyMedium!
+                                                  .copyWith(
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                            ),
+                                          ],
+                                        ),
+                                        const SizedBox(height: 5),
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Text(
+                                              "Total Tagihan:",
+                                              style: TextTheme.of(context)
+                                                  .bodyMedium!
+                                                  .copyWith(
+                                                    fontWeight: FontWeight.bold,
+                                                    color: Theme.of(
+                                                      context,
+                                                    ).colorScheme.primary,
+                                                  ),
+                                            ),
+                                            Text(
+                                              "Rp $totalTagihan",
+                                              style: TextTheme.of(context)
+                                                  .bodyMedium!
+                                                  .copyWith(
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    );
+                                  },
+                                );
                               },
                             ),
                           ],
@@ -403,7 +557,6 @@ class _InputOrderPageState extends State<InputOrderPage> {
                       items: items,
                       discount: state.selectedDiscount,
                     );
-
                     final header = OrderHeader(
                       customerId: state.selectedCustomer!,
                       userId: widget.userId,
@@ -413,53 +566,50 @@ class _InputOrderPageState extends State<InputOrderPage> {
                       status: "Masuk",
                       paymentMethod: state.selectedPayment!,
                       paymentStatus: "unpaid",
-                      notes: "",
+                      notes: state.catatan,
                     );
                     context.read<OrderBloc>().add(
                       AddOrder(orderHeader: header, items: items),
                     );
-                    debugPrint("===== ORDER HEADER =====");
-                    debugPrint("customerId     : ${header.customerId}");
-                    debugPrint("userId         : ${header.userId}");
-                    debugPrint("discountId     : ${header.discountId}");
-                    debugPrint("orderDate      : ${header.orderDate}");
-                    debugPrint("totalPrice     : ${header.totalPrice}");
-                    debugPrint("status         : ${header.status}");
-                    debugPrint("paymentMethod  : ${header.paymentMethod}");
-                    debugPrint("paymentStatus  : ${header.paymentStatus}");
-                    debugPrint("notes          : ${header.notes}");
-
-                    debugPrint("===== ORDER ITEMS =====");
-
-                    for (int i = 0; i < items.length; i++) {
-                      final item = items[i];
-
-                      debugPrint("---- Item ${i + 1} ----");
-                      debugPrint("serviceId      : ${item.serviceId}");
-                      debugPrint("quantity       : ${item.quantity}");
-                      debugPrint("pricePerUnit   : ${item.pricePerUnit}");
-                      debugPrint("subtotal       : ${item.subtotal}");
-                      debugPrint("deliveryStatus : ${item.deliveryStatus}");
-                    }
                   },
                   child: Center(
-                    child: Container(
-                      margin: EdgeInsets.only(bottom: 10),
-                      width: double.infinity,
-                      height: 60,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(15),
-                        color: Theme.of(context).colorScheme.primary,
-                      ),
-                      child: Center(
-                        child: Text(
-                          "Simpan order sekarang".toUpperCase(),
-                          style: TextTheme.of(context).bodyLarge!.copyWith(
-                            fontWeight: FontWeight.bold,
-                            color: Theme.of(context).colorScheme.onPrimary,
+                    child: BlocBuilder<OrderBloc, OrderState>(
+                      builder: (context, state) {
+                        if (state is OrderLoading) {
+                          return Container(
+                            margin: EdgeInsets.only(bottom: 10),
+                            width: double.infinity,
+                            height: 60,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(15),
+                              color: Theme.of(context).colorScheme.primary,
+                            ),
+                            child: Center(
+                              child: CircularProgressIndicator(
+                                color: Theme.of(context).colorScheme.onPrimary,
+                              ),
+                            ),
+                          );
+                        }
+                        return Container(
+                          margin: EdgeInsets.only(bottom: 10),
+                          width: double.infinity,
+                          height: 60,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(15),
+                            color: Theme.of(context).colorScheme.primary,
                           ),
-                        ),
-                      ),
+                          child: Center(
+                            child: Text(
+                              "Simpan order sekarang".toUpperCase(),
+                              style: TextTheme.of(context).bodyLarge!.copyWith(
+                                fontWeight: FontWeight.bold,
+                                color: Theme.of(context).colorScheme.onPrimary,
+                              ),
+                            ),
+                          ),
+                        );
+                      },
                     ),
                   ),
                 ),

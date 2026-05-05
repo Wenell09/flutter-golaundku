@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_golaundku/models/order_header.dart';
 import 'package:flutter_golaundku/models/order_item.dart';
+import 'package:flutter_golaundku/models/order_model.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class OrderRepository {
@@ -20,6 +21,30 @@ class OrderRepository {
     } catch (e) {
       debugPrint("error add order:$e");
       throw Exception(e.toString());
+    }
+  }
+
+  Stream<List<OrderModel>> streamOrders() {
+    return supabase
+        .from("orders")
+        .stream(primaryKey: ["order_id"])
+        .map((data) {
+          return data.map((e) => OrderModel.fromJson(e)).toList();
+        })
+        .handleError((error) {
+          throw Exception("Stream order error: $error");
+        });
+  }
+
+  Future<void> updateStatusOrder(String orderId, String status) async {
+    try {
+      await supabase
+          .from("orders")
+          .update({"status": status})
+          .eq("order_id", orderId);
+    } catch (e) {
+      debugPrint("error update status order:$e");
+      throw Exception("error update status order:$e");
     }
   }
 

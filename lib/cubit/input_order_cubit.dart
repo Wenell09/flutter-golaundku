@@ -110,6 +110,10 @@ class InputOrderCubit extends Cubit<InputOrderState> {
     emit(state.copyWith(berat: value));
   }
 
+  void inputCatatan(String value) {
+    emit(state.copyWith(catatan: value));
+  }
+
   void selectDiscount(DiscountModel? discount) {
     emit(state.copyWith(selectedDiscount: discount));
   }
@@ -151,6 +155,7 @@ class InputOrderCubit extends Cubit<InputOrderState> {
         selectedDiscount: null,
         berat: '',
         formItems: [ServiceFormItem()],
+        catatan: '',
       ),
     );
   }

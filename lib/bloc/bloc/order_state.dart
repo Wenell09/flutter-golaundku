@@ -13,6 +13,8 @@ class OrderLoaded extends OrderState {
 
 class OrderAddSuccess extends OrderState {}
 
+class OrderUpdateStatusSuccess extends OrderState {}
+
 class OrderStreamError extends OrderState {
   final String message;
   OrderStreamError({required this.message});

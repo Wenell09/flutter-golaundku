@@ -62,8 +62,8 @@ class MaterialBloc extends Bloc<MaterialEvent, MaterialState> {
         emit(MaterialLoaded(materialData: allMaterial));
         return;
       }
-      final filtered = allMaterial.where((service) {
-        return service.name.toLowerCase().contains(keyword);
+      final filtered = allMaterial.where((data) {
+        return data.name.toLowerCase().contains(keyword);
       }).toList();
       emit(MaterialLoaded(materialData: filtered));
     });

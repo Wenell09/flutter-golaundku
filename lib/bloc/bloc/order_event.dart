@@ -20,3 +20,13 @@ class AddOrder extends OrderEvent {
 
   AddOrder({required this.orderHeader, required this.items});
 }
+
+class UpdateStatusOrder extends OrderEvent {
+  final String orderId, status;
+  UpdateStatusOrder({required this.orderId, required this.status});
+}
+
+class SearchOrder extends OrderEvent {
+  final String keyword;
+  SearchOrder({required this.keyword});
+}

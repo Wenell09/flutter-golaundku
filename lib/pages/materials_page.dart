@@ -45,6 +45,7 @@ class _MaterialsPageState extends State<MaterialsPage> {
         padding: EdgeInsets.all(15),
         children: [
           TextField(
+            controller: inputSearchProduct,
             onChanged: (value) {
               context.read<MaterialBloc>().add(SearchMaterial(keyword: value));
             },

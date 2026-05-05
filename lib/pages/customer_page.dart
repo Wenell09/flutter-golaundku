@@ -45,6 +45,7 @@ class _CustomerPageState extends State<CustomerPage> {
         padding: EdgeInsets.all(15),
         children: [
           TextField(
+            controller: inputSearchCustomer,
             onChanged: (value) {
               context.read<CustomerBloc>().add(SearchCustomer(keyword: value));
             },

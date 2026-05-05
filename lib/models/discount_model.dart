@@ -24,8 +24,5 @@ class DiscountModel {
     );
   }
 
-  @override
-  String toString() {
-    return 'Discount(id: $discountId, name: $name)';
-  }
+ 
 }

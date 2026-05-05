@@ -7,6 +7,7 @@ class InputOrderState {
   final DiscountModel? selectedDiscount;
   final String berat;
   final List<ServiceFormItem> formItems;
+  final String catatan;
 
   InputOrderState({
     this.selectedCustomer,
@@ -15,6 +16,7 @@ class InputOrderState {
     this.selectedDiscount,
     this.berat = '',
     this.formItems = const [],
+    this.catatan = '',
   });
 
   InputOrderState copyWith({
@@ -24,6 +26,7 @@ class InputOrderState {
     DiscountModel? selectedDiscount,
     String? berat,
     List<ServiceFormItem>? formItems,
+    String? catatan,
   }) {
     return InputOrderState(
       selectedCustomer: selectedCustomer ?? this.selectedCustomer,
@@ -32,20 +35,7 @@ class InputOrderState {
       selectedDiscount: selectedDiscount ?? this.selectedDiscount,
       berat: berat ?? this.berat,
       formItems: formItems ?? this.formItems,
+      catatan: catatan ?? this.catatan,
     );
-  }
-
-  @override
-  String toString() {
-    return '''
-InputOrderState(
-  selectedCustomer: $selectedCustomer,
-  selectedKiloan: $selectedKiloan,
-  selectedPayment: $selectedPayment,
-  selectedDiscount: $selectedDiscount,
-  berat: $berat,
-  formItems: $formItems
-)
-''';
   }
 }

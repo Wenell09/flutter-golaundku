@@ -1,5 +1,3 @@
-import 'package:uuid/uuid.dart';
-
 class OrderItem {
   final String orderItemId;
   final String serviceId;
