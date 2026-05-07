@@ -58,7 +58,7 @@ class OrderRepository {
       await supabase
           .from("order_items")
           .update({"delivery_status": deliveryStatus})
-          .eq("order_id", orderItemId);
+          .eq("order_item_id", orderItemId);
     } catch (e) {
       debugPrint("error update delivery status order:$e");
       throw Exception("error update delivery status order:$e");

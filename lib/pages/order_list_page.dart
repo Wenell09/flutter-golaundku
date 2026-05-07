@@ -39,7 +39,7 @@ class _OrderListPageState extends State<OrderListPage> {
             filled: true,
             prefixIcon: Icon(Icons.search),
             fillColor: Theme.of(context).colorScheme.onPrimary,
-            hintText: "Cari nama pelanggan...",
+            hintText: "Cari ID atau nama pelanggan...",
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
           ),
         ),
@@ -177,9 +177,6 @@ class _OrderListPageState extends State<OrderListPage> {
                                     Text(
                                       "Masuk: ${Helper.toIndoDate(data.orderDate)}",
                                     ),
-                                    // Text(
-                                    //   "Masuk: ${Helper.toIndoDate(data.orderDate)}",
-                                    // ),
                                   ],
                                 ),
                                 Row(

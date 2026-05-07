@@ -409,20 +409,18 @@ class _InputOrderPageState extends State<InputOrderPage> {
                                   builder: (context, state) {
                                     final cubit = context
                                         .read<InputOrderCubit>();
-                                    final helper = Helper();
-
                                     final items = cubit.buildOrderItems(
                                       serviceState.serviceData,
                                     );
-                                    final subtotal = helper.calculateSubtotal(
+                                    final subtotal = Helper.calculateSubtotal(
                                       items,
                                     );
-                                    final discountAmount = helper
+                                    final discountAmount = Helper
                                         .calculateDiscountAmount(
                                           subtotal: subtotal,
                                           discount: state.selectedDiscount,
                                         );
-                                    final totalTagihan = helper.calculateTotal(
+                                    final totalTagihan = Helper.calculateTotal(
                                       items: items,
                                       discount: state.selectedDiscount,
                                     );
@@ -554,8 +552,7 @@ class _InputOrderPageState extends State<InputOrderPage> {
                       debugPrint("Form belum lengkap");
                       return;
                     }
-                    final helper = Helper();
-                    final total = helper.calculateTotal(
+                    final total = Helper.calculateTotal(
                       items: items,
                       discount: state.selectedDiscount,
                     );

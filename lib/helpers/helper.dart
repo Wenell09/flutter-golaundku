@@ -1,5 +1,6 @@
 import 'package:flutter_golaundku/models/discount_model.dart';
 import 'package:flutter_golaundku/models/order_item.dart';
+import 'package:flutter_golaundku/models/order_items_model.dart';
 import 'package:intl/intl.dart';
 
 class Helper {
@@ -17,11 +18,11 @@ class Helper {
     return DateFormat('dd-MM-yyyy').format(date);
   }
 
-  int calculateSubtotal(List<OrderItem> items) {
+  static int calculateSubtotal(List<OrderItem> items) {
     return items.fold(0, (sum, item) => sum + item.subtotal);
   }
 
-  int calculateDiscountAmount({
+  static int calculateDiscountAmount({
     required int subtotal,
     DiscountModel? discount,
   }) {
@@ -38,7 +39,7 @@ class Helper {
     return discountAmount;
   }
 
-  int calculateTotal({
+  static int calculateTotal({
     required List<OrderItem> items,
     DiscountModel? discount,
   }) {
@@ -47,6 +48,24 @@ class Helper {
       subtotal: subtotal,
       discount: discount,
     );
+    return subtotal - discountAmount;
+  }
+
+  static int calculateSubtotalFromDetail(List<OrderItemsModel> items) {
+    return items.fold(0, (sum, item) => sum + item.subTotal);
+  }
+
+  static int calculateTotalFromDetail({
+    required List<OrderItemsModel> items,
+    DiscountModel? discount,
+  }) {
+    final subtotal = calculateSubtotalFromDetail(items);
+
+    final discountAmount = calculateDiscountAmount(
+      subtotal: subtotal,
+      discount: discount,
+    );
+
     return subtotal - discountAmount;
   }
 }
