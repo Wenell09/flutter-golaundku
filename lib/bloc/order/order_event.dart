@@ -21,6 +21,11 @@ class AddOrder extends OrderEvent {
   AddOrder({required this.orderHeader, required this.items});
 }
 
+class UpdatePaymentConfirm extends OrderEvent {
+  final String orderId, paymentStatus;
+  UpdatePaymentConfirm({required this.orderId, required this.paymentStatus});
+}
+
 class UpdateStatusOrder extends OrderEvent {
   final String orderId, status;
   UpdateStatusOrder({required this.orderId, required this.status});

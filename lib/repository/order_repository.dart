@@ -77,6 +77,18 @@ class OrderRepository {
     }
   }
 
+  Future<void> paymentConfirm(String orderId, String paymentStatus) async {
+    try {
+      await supabase
+          .from("orders")
+          .update({"payment_status": paymentStatus})
+          .eq("order_id", orderId);
+    } catch (e) {
+      debugPrint("error update payment confirm order:$e");
+      throw Exception("error update payment confirm order:$e");
+    }
+  }
+
   // Stream<List<OrderModel>> streamOrdersFIFO() {
   //   return supabase
   //       .from("orders")

@@ -78,6 +78,20 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
       }
     });
 
+    on<UpdatePaymentConfirm>((event, emit) async {
+      try {
+        await orderRepository.paymentConfirm(
+          event.orderId,
+          event.paymentStatus,
+        );
+        emit(OrderUpdatePaymentConfirmSuccess());
+      } catch (e) {
+        emit(
+          OrderActionError(message: "Gagal mengupdate konfirmasi pembayaran!"),
+        );
+      }
+    });
+
     on<SearchOrder>((event, emit) {
       final keyword = event.keyword.toLowerCase().trim();
       if (keyword.isEmpty) {

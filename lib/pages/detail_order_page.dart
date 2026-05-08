@@ -251,6 +251,12 @@ class _DetailOrderPageState extends State<DetailOrderPage> {
                               physics: const ScrollPhysics(),
                               shrinkWrap: true,
                               itemBuilder: (context, index) {
+                                state.detailOrderData.sort((a, b) {
+                                  if (a.deliveryStatus == b.deliveryStatus) {
+                                    return 0;
+                                  }
+                                  return a.deliveryStatus ? -1 : 1;
+                                });
                                 final data = state.detailOrderData[index];
                                 return Padding(
                                   padding: EdgeInsets.only(bottom: 10),

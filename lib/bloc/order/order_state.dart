@@ -15,6 +15,8 @@ class OrderAddSuccess extends OrderState {}
 
 class OrderUpdateStatusSuccess extends OrderState {}
 
+class OrderUpdatePaymentConfirmSuccess extends OrderState {}
+
 class OrderStreamError extends OrderState {
   final String message;
   OrderStreamError({required this.message});
