@@ -22,7 +22,6 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
   late Map<String, DiscountModel> _discountMap;
   List<CustomerModel> _customers = [];
   List<DiscountModel> _discounts = [];
-  List<OrderModel> allOrder = [];
   OrderBloc(
     this.orderRepository,
     this.customerRepository,
@@ -55,8 +54,7 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
         final discount = _discountMap[order.discountId];
         return order.copyWith(customerModel: customer, discountModel: discount);
       }).toList();
-      allOrder = mappedOrders;
-      emit(OrderLoaded(orderData: allOrder));
+      emit(OrderLoaded(orderData: mappedOrders));
     });
 
     on<AddOrder>((event, emit) async {
@@ -92,17 +90,18 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
       }
     });
 
-    on<SearchOrder>((event, emit) {
-      final keyword = event.keyword.toLowerCase().trim();
-      if (keyword.isEmpty) {
-        emit(OrderLoaded(orderData: allOrder));
-        return;
-      }
-      final filtered = allOrder.where((data) {
-        return data.orderId.toLowerCase().contains(keyword) ||
-            data.customerModel!.name.toLowerCase().contains(keyword);
-      }).toList();
-      emit(OrderLoaded(orderData: filtered));
-    });
+    //   on<SearchOrder>((event, emit) {
+    //     final keyword = event.keyword.toLowerCase().trim();
+    //     if (keyword.isEmpty) {
+    //       emit(OrderLoaded(orderData: allOrder));
+    //       return;
+    //     }
+    //     final filtered = allOrder.where((data) {
+    //       return data.orderId.toLowerCase().contains(keyword) ||
+    //           data.customerModel!.name.toLowerCase().contains(keyword);
+    //     }).toList();
+    //     emit(OrderLoaded(orderData: filtered));
+    //   });
+    // }
   }
 }

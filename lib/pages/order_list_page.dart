@@ -12,6 +12,7 @@ class OrderListPage extends StatefulWidget {
 }
 
 class _OrderListPageState extends State<OrderListPage> {
+  String keyword = "";
   late TextEditingController searchCustomer;
   @override
   void initState() {
@@ -33,7 +34,9 @@ class _OrderListPageState extends State<OrderListPage> {
       children: [
         TextField(
           onChanged: (value) {
-            context.read<OrderBloc>().add(SearchOrder(keyword: value));
+            setState(() {
+              keyword = value;
+            });
           },
           decoration: InputDecoration(
             filled: true,
@@ -52,6 +55,12 @@ class _OrderListPageState extends State<OrderListPage> {
             if (state is OrderLoading) {
               return Center(child: CircularProgressIndicator());
             } else if (state is OrderLoaded) {
+              final filteredData = state.orderData.where((data) {
+                    return data.orderId.toLowerCase().contains(keyword) ||
+                        data.customerModel!.name.toLowerCase().contains(
+                          keyword,
+                        );
+                  }).toList();
               if (state.orderData.isEmpty) {
                 return SizedBox(
                   height: MediaQuery.of(context).size.height / 2,
@@ -76,7 +85,8 @@ class _OrderListPageState extends State<OrderListPage> {
                 physics: ScrollPhysics(),
                 shrinkWrap: true,
                 itemBuilder: (context, index) {
-                  final data = state.orderData[index];
+                  
+                  final data = filteredData[index];
                   return GestureDetector(
                     onTap: () => Navigator.of(context).push(
                       MaterialPageRoute(
@@ -201,7 +211,7 @@ class _OrderListPageState extends State<OrderListPage> {
                     ),
                   );
                 },
-                itemCount: state.orderData.length,
+                itemCount: filteredData.length,
               );
             }
             return Container();

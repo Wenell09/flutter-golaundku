@@ -11,6 +11,7 @@ class PaymentPage extends StatefulWidget {
 }
 
 class _PaymentPageState extends State<PaymentPage> {
+  String keyword = "";
   late TextEditingController searchCustomer;
   @override
   void initState() {
@@ -31,7 +32,9 @@ class _PaymentPageState extends State<PaymentPage> {
       children: [
         TextField(
           onChanged: (value) {
-            context.read<OrderBloc>().add(SearchOrder(keyword: value));
+            setState(() {
+              keyword = value;
+            });
           },
           decoration: InputDecoration(
             filled: true,
@@ -50,6 +53,10 @@ class _PaymentPageState extends State<PaymentPage> {
             if (state is OrderLoading) {
               return Center(child: CircularProgressIndicator());
             } else if (state is OrderLoaded) {
+              final filteredData = state.orderData.where((data) {
+                return data.orderId.toLowerCase().contains(keyword) ||
+                    data.customerModel!.name.toLowerCase().contains(keyword);
+              }).toList();
               if (state.orderData.isEmpty) {
                 return SizedBox(
                   height: MediaQuery.of(context).size.height / 2,
@@ -74,7 +81,7 @@ class _PaymentPageState extends State<PaymentPage> {
                 physics: ScrollPhysics(),
                 shrinkWrap: true,
                 itemBuilder: (context, index) {
-                  final data = state.orderData[index];
+                  final data = filteredData[index];
                   return Card(
                     child: Padding(
                       padding: EdgeInsets.all(10),
@@ -249,7 +256,7 @@ class _PaymentPageState extends State<PaymentPage> {
                     ),
                   );
                 },
-                itemCount: state.orderData.length,
+                itemCount: filteredData.length,
               );
             }
             return Container();
