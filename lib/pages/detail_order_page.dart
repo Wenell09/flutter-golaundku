@@ -393,17 +393,13 @@ class _DetailOrderPageState extends State<DetailOrderPage> {
                                                 borderRadius:
                                                     BorderRadius.circular(10),
                                                 border: Border.all(
-                                                  color:
-                                                      (data.deliveryStatus !=
-                                                          true)
+                                                  color: (!data.deliveryStatus)
                                                       ? Theme.of(
                                                           context,
                                                         ).colorScheme.error
                                                       : Colors.transparent,
                                                 ),
-                                                color:
-                                                    (data.deliveryStatus ==
-                                                        true)
+                                                color: (data.deliveryStatus)
                                                     ? Colors.green.withValues(
                                                         alpha: 0.15,
                                                       )
@@ -414,14 +410,12 @@ class _DetailOrderPageState extends State<DetailOrderPage> {
                                                   spacing: 5,
                                                   children: [
                                                     Icon(
-                                                      (data.deliveryStatus ==
-                                                              true)
+                                                      (data.deliveryStatus)
                                                           ? Icons
                                                                 .check_circle_outline_rounded
                                                           : Icons.close,
                                                       color:
-                                                          (data.deliveryStatus !=
-                                                              true)
+                                                          (!data.deliveryStatus)
                                                           ? Theme.of(
                                                               context,
                                                             ).colorScheme.error
@@ -429,8 +423,7 @@ class _DetailOrderPageState extends State<DetailOrderPage> {
                                                       size: 15,
                                                     ),
                                                     Text(
-                                                      (data.deliveryStatus ==
-                                                              true)
+                                                      (data.deliveryStatus)
                                                           ? "SUDAH"
                                                           : "BELUM",
                                                       style:
@@ -440,8 +433,8 @@ class _DetailOrderPageState extends State<DetailOrderPage> {
                                                             fontWeight:
                                                                 FontWeight.bold,
                                                             color:
-                                                                (data.deliveryStatus !=
-                                                                    true)
+                                                                (!data
+                                                                    .deliveryStatus)
                                                                 ? Theme.of(
                                                                         context,
                                                                       )

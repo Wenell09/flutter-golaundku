@@ -201,14 +201,12 @@ class _DiscountPageState extends State<DiscountPage> {
                                     ),
                                     const SizedBox(width: 5),
                                     Text(
-                                      data.active == true
-                                          ? "Aktif"
-                                          : "Tidak Aktif",
+                                      data.active ? "Aktif" : "Tidak Aktif",
                                       style: Theme.of(context)
                                           .textTheme
                                           .bodyMedium!
                                           .copyWith(
-                                            color: data.active == true
+                                            color: data.active
                                                 ? Colors.green
                                                 : Colors.red,
                                             fontWeight: FontWeight.w500,

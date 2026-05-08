@@ -347,9 +347,7 @@ class _InputOrderPageState extends State<InputOrderPage> {
                                         child: Text("Tidak pilih"),
                                       ),
                                       ...state.discountData
-                                          .where(
-                                            (element) => element.active == true,
-                                          )
+                                          .where((element) => element.active)
                                           .map((data) {
                                             return DropdownMenuItem(
                                               value: data.discountId,
@@ -415,8 +413,8 @@ class _InputOrderPageState extends State<InputOrderPage> {
                                     final subtotal = Helper.calculateSubtotal(
                                       items,
                                     );
-                                    final discountAmount = Helper
-                                        .calculateDiscountAmount(
+                                    final discountAmount =
+                                        Helper.calculateDiscountAmount(
                                           subtotal: subtotal,
                                           discount: state.selectedDiscount,
                                         );
