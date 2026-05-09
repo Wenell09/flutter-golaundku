@@ -30,15 +30,35 @@ class _ServicePageState extends State<ServicePage> {
     return BlocListener<ServiceBloc, ServiceState>(
       listener: (context, state) {
         if (state is ServiceAddSuccess) {
-          showSnackBarWidget(context, "Berhasil menambahkan layanan baru!");
+          showSnackBarWidget(
+            context,
+            "Berhasil menambahkan layanan baru!",
+            Theme.of(context).colorScheme.primary,
+          );
         } else if (state is ServiceUpdateSuccess) {
-          showSnackBarWidget(context, "Berhasil update layanan!");
+          showSnackBarWidget(
+            context,
+            "Berhasil update layanan!",
+            Theme.of(context).colorScheme.primary,
+          );
         } else if (state is ServiceDeleteSuccess) {
-          showSnackBarWidget(context, "Berhasil menghapus layanan!");
+          showSnackBarWidget(
+            context,
+            "Berhasil menghapus layanan!",
+            Theme.of(context).colorScheme.primary,
+          );
         } else if (state is ServiceActionError) {
-          showSnackBarWidget(context, state.message);
+          showSnackBarWidget(
+            context,
+            state.message,
+            Theme.of(context).colorScheme.error,
+          );
         } else if (state is ServiceStreamError) {
-          showSnackBarWidget(context, "Koneksi realtime bermasalah");
+          showSnackBarWidget(
+            context,
+            "Koneksi realtime bermasalah",
+            Theme.of(context).colorScheme.error,
+          );
         }
       },
       child: ListView(
@@ -252,10 +272,10 @@ class _ServicePageState extends State<ServicePage> {
     );
   }
 
-  void showSnackBarWidget(BuildContext context, String text) {
+  void showSnackBarWidget(BuildContext context, String text, Color colors) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        backgroundColor: Theme.of(context).colorScheme.primary,
+        backgroundColor: colors,
         duration: Duration(seconds: 1),
         content: Text(
           text,

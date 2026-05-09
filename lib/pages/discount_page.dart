@@ -22,15 +22,35 @@ class _DiscountPageState extends State<DiscountPage> {
     return BlocListener<DiscountBloc, DiscountState>(
       listener: (context, state) {
         if (state is DiscountAddSuccess) {
-          showSnackBarWidget(context, "Berhasil menambahkan discount baru!");
+          showSnackBarWidget(
+            context,
+            "Berhasil menambahkan discount baru!",
+            Theme.of(context).colorScheme.primary,
+          );
         } else if (state is DiscountUpdateSuccess) {
-          showSnackBarWidget(context, "Berhasil update discount!");
+          showSnackBarWidget(
+            context,
+            "Berhasil update discount!",
+            Theme.of(context).colorScheme.primary,
+          );
         } else if (state is DiscountDeleteSuccess) {
-          showSnackBarWidget(context, "Berhasil menghapus discount!");
+          showSnackBarWidget(
+            context,
+            "Berhasil menghapus discount!",
+            Theme.of(context).colorScheme.primary,
+          );
         } else if (state is DiscountActionError) {
-          showSnackBarWidget(context, state.message);
+          showSnackBarWidget(
+            context,
+            state.message,
+            Theme.of(context).colorScheme.error,
+          );
         } else if (state is DiscountStreamError) {
-          showSnackBarWidget(context, "Koneksi realtime bermasalah");
+          showSnackBarWidget(
+            context,
+            "Koneksi realtime bermasalah",
+            Theme.of(context).colorScheme.error,
+          );
         }
       },
       child: ListView(
@@ -232,10 +252,10 @@ class _DiscountPageState extends State<DiscountPage> {
     );
   }
 
-  void showSnackBarWidget(BuildContext context, String text) {
+  void showSnackBarWidget(BuildContext context, String text, Color colors) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        backgroundColor: Theme.of(context).colorScheme.primary,
+        backgroundColor: colors,
         duration: Duration(seconds: 1),
         content: Text(
           text,

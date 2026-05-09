@@ -30,15 +30,15 @@ class _MaterialsPageState extends State<MaterialsPage> {
     return BlocListener<MaterialBloc, MaterialState>(
       listener: (context, state) {
         if (state is MaterialAddSuccess) {
-          showSnackBarWidget(context, "Berhasil menambahkan barang baru!");
+          showSnackBarWidget(context, "Berhasil menambahkan barang baru!", Theme.of(context).colorScheme.primary);
         } else if (state is MaterialUpdateSuccess) {
-          showSnackBarWidget(context, "Berhasil update barang!");
+          showSnackBarWidget(context, "Berhasil update barang!", Theme.of(context).colorScheme.primary);
         } else if (state is MaterialDeleteSuccess) {
-          showSnackBarWidget(context, "Berhasil menghapus barang!");
+          showSnackBarWidget(context, "Berhasil menghapus barang!", Theme.of(context).colorScheme.primary);
         } else if (state is MaterialActionError) {
-          showSnackBarWidget(context, state.message);
+          showSnackBarWidget(context, state.message, Theme.of(context).colorScheme.error);
         } else if (state is MaterialStreamError) {
-          showSnackBarWidget(context, "Koneksi realtime bermasalah");
+          showSnackBarWidget(context, "Koneksi realtime bermasalah", Theme.of(context).colorScheme.error);
         }
       },
       child: ListView(
@@ -246,10 +246,10 @@ class _MaterialsPageState extends State<MaterialsPage> {
     );
   }
 
-  void showSnackBarWidget(BuildContext context, String text) {
+  void showSnackBarWidget(BuildContext context, String text, Color colors) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        backgroundColor: Theme.of(context).colorScheme.primary,
+        backgroundColor: colors,
         duration: Duration(seconds: 1),
         content: Text(
           text,
