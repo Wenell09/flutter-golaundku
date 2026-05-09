@@ -29,6 +29,7 @@ class OrderRepository {
     return supabase
         .from("orders")
         .stream(primaryKey: ["order_id"])
+        .order("order_date", ascending: true)
         .map((data) {
           return data.map((e) => OrderModel.fromJson(e)).toList();
         })
@@ -88,20 +89,4 @@ class OrderRepository {
       throw Exception("error update payment confirm order:$e");
     }
   }
-
-  // Stream<List<OrderModel>> streamOrdersFIFO() {
-  //   return supabase
-  //       .from("orders")
-  //       .stream(primaryKey: ["order_id"])
-  //       .order("order_date", ascending: true)
-  //       .map((data) {
-  //         return data
-  //             .map((e) => OrderModel.fromJson(e))
-  //             .where(
-  //               (order) =>
-  //                   order.status != "Selesai" && order.status != "Diantar",
-  //             )
-  //             .toList();
-  //       });
-  // }
 }

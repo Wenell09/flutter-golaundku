@@ -474,7 +474,7 @@ class _InputOrderPageState extends State<InputOrderPage> {
                                                             .selectedDiscount!
                                                             .type ==
                                                         "percentage"
-                                                  ? "${state.selectedDiscount!.value}% ${Helper.formatRupiah(discountAmount)}"
+                                                  ? "(${state.selectedDiscount!.value}%) ${Helper.formatRupiah(discountAmount)}"
                                                   : Helper.formatRupiah(
                                                       discountAmount,
                                                     ),
