@@ -82,6 +82,7 @@ class _InputOrderPageState extends State<InputOrderPage> {
                                 if (state is CustomerLoaded) {
                                   return DropdownButtonFormField(
                                     initialValue: formState.selectedCustomer,
+                                    isExpanded: true,
                                     decoration: InputDecoration(
                                       hintText: "Pilih Pelanggan",
                                       border: OutlineInputBorder(
@@ -91,7 +92,11 @@ class _InputOrderPageState extends State<InputOrderPage> {
                                     items: state.customerData.map((data) {
                                       return DropdownMenuItem(
                                         value: data.customerId,
-                                        child: Text(data.name),
+                                        child: Text(
+                                          data.name,
+                                          overflow: TextOverflow.ellipsis,
+                                          maxLines: 1,
+                                        ),
                                       );
                                     }).toList(),
                                     onChanged: cubit.selectCustomer,
@@ -148,7 +153,6 @@ class _InputOrderPageState extends State<InputOrderPage> {
                                       const SizedBox(height: 10),
                                       TextField(
                                         controller: inputBerat,
-
                                         enabled:
                                             formState.selectedKiloan != null,
                                         keyboardType: TextInputType.number,

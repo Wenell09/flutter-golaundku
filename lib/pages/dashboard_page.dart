@@ -145,10 +145,12 @@ class DashboardPage extends StatelessWidget {
                                 size: 15,
                                 color: Theme.of(context).colorScheme.primary,
                               ),
-                              Text(
-                                data.customerModel!.name,
-                                style: TextTheme.of(context).bodyLarge!
-                                    .copyWith(fontWeight: FontWeight.bold),
+                              Flexible(
+                                child: Text(
+                                  data.customerModel!.name,
+                                  style: TextTheme.of(context).bodyLarge!
+                                      .copyWith(fontWeight: FontWeight.bold),
+                                ),
                               ),
                             ],
                           ),

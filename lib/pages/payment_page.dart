@@ -128,15 +128,17 @@ class _PaymentPageState extends State<PaymentPage> {
                                 size: 15,
                                 color: Theme.of(context).colorScheme.primary,
                               ),
-                              Text(
-                                data.customerModel!.name,
-                                style: TextTheme.of(context).titleMedium!
-                                    .copyWith(
-                                      fontWeight: FontWeight.bold,
-                                      color: Theme.of(
-                                        context,
-                                      ).colorScheme.primary,
-                                    ),
+                              Flexible(
+                                child: Text(
+                                  data.customerModel!.name,
+                                  style: TextTheme.of(context).titleMedium!
+                                      .copyWith(
+                                        fontWeight: FontWeight.bold,
+                                        color: Theme.of(
+                                          context,
+                                        ).colorScheme.primary,
+                                      ),
+                                ),
                               ),
                             ],
                           ),

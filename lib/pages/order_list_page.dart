@@ -56,11 +56,9 @@ class _OrderListPageState extends State<OrderListPage> {
               return Center(child: CircularProgressIndicator());
             } else if (state is OrderLoaded) {
               final filteredData = state.orderData.where((data) {
-                    return data.orderId.toLowerCase().contains(keyword) ||
-                        data.customerModel!.name.toLowerCase().contains(
-                          keyword,
-                        );
-                  }).toList();
+                return data.orderId.toLowerCase().contains(keyword) ||
+                    data.customerModel!.name.toLowerCase().contains(keyword);
+              }).toList();
               if (state.orderData.isEmpty) {
                 return SizedBox(
                   height: MediaQuery.of(context).size.height / 2,
@@ -85,7 +83,6 @@ class _OrderListPageState extends State<OrderListPage> {
                 physics: ScrollPhysics(),
                 shrinkWrap: true,
                 itemBuilder: (context, index) {
-                  
                   final data = filteredData[index];
                   return GestureDetector(
                     onTap: () => Navigator.of(context).push(
