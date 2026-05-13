@@ -5,7 +5,6 @@ import 'package:flutter_golaundku/pages/customer_page.dart';
 import 'package:flutter_golaundku/pages/dashboard_page.dart';
 import 'package:flutter_golaundku/pages/discount_page.dart';
 import 'package:flutter_golaundku/pages/input_order_page.dart';
-import 'package:flutter_golaundku/pages/materials_page.dart';
 import 'package:flutter_golaundku/pages/order_list_page.dart';
 import 'package:flutter_golaundku/pages/payment_page.dart';
 import 'package:flutter_golaundku/pages/report_page.dart';
@@ -13,7 +12,6 @@ import 'package:flutter_golaundku/pages/service_page.dart';
 import 'package:flutter_golaundku/pages/widget/drawer_widget.dart';
 import 'package:flutter_golaundku/pages/widget/input_customer_dialog_widget.dart';
 import 'package:flutter_golaundku/pages/widget/input_discount_dialog_widget.dart';
-import 'package:flutter_golaundku/pages/widget/input_material_dialog_widget.dart';
 import 'package:flutter_golaundku/pages/widget/input_service_dialog_widget.dart';
 
 class MainPage extends StatelessWidget {
@@ -37,7 +35,6 @@ class MainPage extends StatelessWidget {
               PaymentPage(),
               ReportPage(),
               ServicePage(),
-              MaterialsPage(),
               CustomerPage(),
               DiscountPage(),
             ],
@@ -63,10 +60,8 @@ PreferredSizeWidget getAppBar(int index) {
     case 5:
       return AppBar(title: const Text("Layanan"));
     case 6:
-      return AppBar(title: const Text("Stok Barang"));
-    case 7:
       return AppBar(title: const Text("Pelanggan"));
-    case 8:
+    case 7:
       return AppBar(title: const Text("Diskon"));
     default:
       return AppBar(title: const Text("App"));
@@ -100,22 +95,12 @@ Widget? getFAB(BuildContext context, int index) {
         onPressed: () {
           showDialog(
             context: context,
-            builder: (context) => InputMaterialDialogWidget(),
-          );
-        },
-        child: Icon(Icons.add),
-      );
-    case 7:
-      return FloatingActionButton(
-        onPressed: () {
-          showDialog(
-            context: context,
             builder: (context) => InputCustomerDialogWidget(),
           );
         },
         child: Icon(Icons.add),
       );
-    case 8:
+    case 7:
       return FloatingActionButton(
         onPressed: () {
           showDialog(

@@ -5,7 +5,6 @@ import 'package:flutter_golaundku/bloc/auth/auth_bloc.dart';
 import 'package:flutter_golaundku/bloc/customer/customer_bloc.dart';
 import 'package:flutter_golaundku/bloc/detail_order/detail_order_bloc.dart';
 import 'package:flutter_golaundku/bloc/discount/discount_bloc.dart';
-import 'package:flutter_golaundku/bloc/material/material_bloc.dart';
 import 'package:flutter_golaundku/bloc/navigation/navigation_bloc.dart';
 import 'package:flutter_golaundku/bloc/order/order_bloc.dart';
 import 'package:flutter_golaundku/bloc/save_userId/save_user_id_bloc.dart';
@@ -18,7 +17,6 @@ import 'package:flutter_golaundku/pages/splash_page.dart';
 import 'package:flutter_golaundku/repository/auth_repository.dart';
 import 'package:flutter_golaundku/repository/customer_repository.dart';
 import 'package:flutter_golaundku/repository/discount_repository.dart';
-import 'package:flutter_golaundku/repository/material_repository.dart';
 import 'package:flutter_golaundku/repository/order_repository.dart';
 import 'package:flutter_golaundku/repository/service_repository.dart';
 import 'package:flutter_golaundku/repository/user_repository.dart';
@@ -39,7 +37,6 @@ void main() async {
         BlocProvider(create: (context) => UserBloc(UserRepository())),
         BlocProvider(create: (context) => ServiceBloc(ServiceRepository())),
         BlocProvider(create: (context) => CustomerBloc(CustomerRepository())),
-        BlocProvider(create: (context) => MaterialBloc(MaterialRepository())),
         BlocProvider(create: (context) => DiscountBloc(DiscountRepository())),
         BlocProvider(
           create: (context) => OrderBloc(

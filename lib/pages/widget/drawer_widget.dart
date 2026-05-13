@@ -56,10 +56,6 @@ class DrawerWidget extends StatelessWidget {
                             label: Text("Layanan"),
                           ),
                           NavigationDrawerDestination(
-                            icon: Icon(Icons.inventory),
-                            label: Text("Stok Barang"),
-                          ),
-                          NavigationDrawerDestination(
                             icon: Icon(Icons.people),
                             label: Text("Pelanggan"),
                           ),
