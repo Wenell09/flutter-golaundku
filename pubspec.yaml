@@ -19,6 +19,7 @@ dependencies:
   uuid: ^4.5.3
   intl: ^0.20.2
   fl_chart: ^1.2.0
+  flutter_launcher_icons: ^0.14.4
 
 dev_dependencies:
   flutter_test:
@@ -27,6 +28,8 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  assets:
+    - assets/images/
   fonts:
     - family: Poppins
       fonts:
@@ -50,3 +53,25 @@ flutter:
           weight: 900
         - asset: assets/fonts/poppins/Poppins-Italic.ttf
           style: italic
+
+flutter_launcher_icons:
+  android: 'launcher_icon'
+  ios: true
+  remove_alpha_ios: true
+  image_path: 'assets/images/golaundku_icons.png'
+  min_sdk_android: 21 # android min sdk min:16, default 21
+  adaptive_icon_background: '#ffffff' # You can use a color or image for the background
+  adaptive_icon_foreground: 'assets/images/golaundku_icons.png' # For adaptive icons on Android
+  web:
+    generate: true
+    image_path: 'assets/images/golaundku_icons.png'
+    background_color: '#hexcode'
+    theme_color: '#hexcode'
+  windows:
+    generate: true
+    image_path: 'assets/images/golaundku_icons.png'
+    icon_size: 48 # min:48, max:256, default: 48
+  macos:
+    generate: true
+    image_path: 'assets/images/golaundku_icons.png'
+

@@ -43,8 +43,10 @@ class _LoginPageState extends State<LoginPage> {
             margin: EdgeInsets.only(top: 70, left: 70, right: 70),
             height: 200,
             decoration: BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage("assets/images/golaundku_icons.png"),
+              ),
               borderRadius: BorderRadius.circular(20),
-              color: Theme.of(context).colorScheme.primary,
             ),
           ),
           const SizedBox(height: 15),

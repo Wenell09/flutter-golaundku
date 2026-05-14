@@ -37,14 +37,7 @@ class SplashPage extends StatelessWidget {
       ],
       child: Scaffold(
         body: Center(
-          child: Column(
-            spacing: 10,
-            mainAxisAlignment: .center,
-            children: [
-              Icon(Icons.local_laundry_service, size: 100),
-              Text("GoLaundKu", style: Theme.of(context).textTheme.titleLarge),
-            ],
-          ),
+          child: Image.asset("assets/images/golaundku_icons.png", height: 150),
         ),
       ),
     );
