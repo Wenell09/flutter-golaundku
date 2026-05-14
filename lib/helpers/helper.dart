@@ -1,6 +1,7 @@
 import 'package:flutter_golaundku/models/discount_model.dart';
 import 'package:flutter_golaundku/models/order_item.dart';
 import 'package:flutter_golaundku/models/order_items_model.dart';
+import 'package:flutter_golaundku/models/order_model.dart';
 import 'package:intl/intl.dart';
 
 class Helper {
@@ -67,5 +68,43 @@ class Helper {
     );
 
     return subtotal - discountAmount;
+  }
+
+  static Map<DateTime, double> generateDailyIncome(List<OrderModel> orders) {
+    final Map<DateTime, double> dailyTotals = {};
+    final paidOrders = orders.where(
+      (order) => order.paymentStatus.toLowerCase() == "paid",
+    );
+    for (final order in paidOrders) {
+      final date = DateTime(
+        order.orderDate.year,
+        order.orderDate.month,
+        order.orderDate.day,
+      );
+      dailyTotals.update(
+        date,
+        (value) => value + order.totalPrice,
+        ifAbsent: () => order.totalPrice.toDouble(),
+      );
+    }
+    final sortedEntries = dailyTotals.entries.toList()
+      ..sort((a, b) => a.key.compareTo(b.key));
+    return Map.fromEntries(sortedEntries);
+  }
+
+  static Map<DateTime, int> generateDailyOrderCount(List<OrderModel> orders) {
+    final Map<DateTime, int> dailyOrders = {};
+    for (final order in orders) {
+      final date = DateTime(
+        order.orderDate.year,
+        order.orderDate.month,
+        order.orderDate.day,
+      );
+      dailyOrders.update(date, (value) => value + 1, ifAbsent: () => 1);
+    }
+    final sortedEntries = dailyOrders.entries.toList()
+      ..sort((a, b) => a.key.compareTo(b.key));
+
+    return Map.fromEntries(sortedEntries);
   }
 }

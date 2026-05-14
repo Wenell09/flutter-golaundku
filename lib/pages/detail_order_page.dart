@@ -84,21 +84,23 @@ class _DetailOrderPageState extends State<DetailOrderPage> {
                                   radius: 25,
                                   child: Center(child: Icon(Icons.person)),
                                 ),
-                                Column(
-                                  crossAxisAlignment: .start,
-                                  children: [
-                                    Text(
-                                      "PELANGGAN",
-                                      style: TextTheme.of(context).bodySmall,
-                                    ),
-                                    Text(
-                                      widget.orderModel.customerModel!.name,
-                                      style: TextTheme.of(context).bodyLarge!
-                                          .copyWith(
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                    ),
-                                  ],
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: .start,
+                                    children: [
+                                      Text(
+                                        "PELANGGAN",
+                                        style: TextTheme.of(context).bodySmall,
+                                      ),
+                                      Text(
+                                        widget.orderModel.customerModel!.name,
+                                        style: TextTheme.of(context).bodyLarge!
+                                            .copyWith(
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ],
                             ),
