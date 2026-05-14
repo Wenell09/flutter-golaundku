@@ -4,10 +4,12 @@ import 'package:flutter_golaundku/bloc/auth/auth_bloc.dart';
 import 'package:flutter_golaundku/bloc/navigation/navigation_bloc.dart';
 import 'package:flutter_golaundku/bloc/save_userId/save_user_id_bloc.dart';
 import 'package:flutter_golaundku/bloc/user/user_bloc.dart';
+import 'package:flutter_golaundku/models/app_menu.dart';
 import 'package:flutter_golaundku/pages/login_page.dart';
 
 class DrawerWidget extends StatelessWidget {
-  const DrawerWidget({super.key});
+  final List<AppMenu> menus;
+  const DrawerWidget({super.key, required this.menus});
 
   @override
   Widget build(BuildContext context) {
@@ -25,45 +27,21 @@ class DrawerWidget extends StatelessWidget {
                   child: BlocBuilder<NavigationBloc, NavigationState>(
                     builder: (context, navState) {
                       return NavigationDrawer(
-                        selectedIndex: navState.currentIndex,
+                        selectedIndex: navState.currentIndex >= menus.length
+                            ? 0
+                            : navState.currentIndex,
                         onDestinationSelected: (index) {
                           context.read<NavigationBloc>().add(ChangePage(index));
                           Navigator.pop(context);
                         },
-                        children: const [
-                          NavigationDrawerDestination(
-                            icon: Icon(Icons.window),
-                            label: Text("Dashboard"),
-                          ),
-                          NavigationDrawerDestination(
-                            icon: Icon(Icons.add_circle),
-                            label: Text("Input Order"),
-                          ),
-                          NavigationDrawerDestination(
-                            icon: Icon(Icons.assignment),
-                            label: Text("Daftar Order"),
-                          ),
-                          NavigationDrawerDestination(
-                            icon: Icon(Icons.money),
-                            label: Text("Pembayaran"),
-                          ),
-                          NavigationDrawerDestination(
-                            icon: Icon(Icons.bar_chart),
-                            label: Text("Laporan"),
-                          ),
-                          NavigationDrawerDestination(
-                            icon: Icon(Icons.dry_cleaning),
-                            label: Text("Layanan"),
-                          ),
-                          NavigationDrawerDestination(
-                            icon: Icon(Icons.people),
-                            label: Text("Pelanggan"),
-                          ),
-                          NavigationDrawerDestination(
-                            icon: Icon(Icons.discount),
-                            label: Text("Manajemen Diskon"),
-                          ),
-                        ],
+                        children: menus
+                            .map(
+                              (menu) => NavigationDrawerDestination(
+                                icon: Icon(menu.icon),
+                                label: Text(menu.title),
+                              ),
+                            )
+                            .toList(),
                       );
                     },
                   ),
@@ -97,6 +75,9 @@ class DrawerWidget extends StatelessWidget {
                                 TextButton(
                                   onPressed: () {
                                     context.read<AuthBloc>().add(LogoutUser());
+                                    context.read<NavigationBloc>().add(
+                                      ChangePage(0),
+                                    );
                                     Navigator.pushAndRemoveUntil(
                                       context,
                                       MaterialPageRoute(

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_golaundku/bloc/order/order_bloc.dart';
-import 'package:flutter_golaundku/helpers/helper.dart';
 
 class DashboardPage extends StatelessWidget {
   const DashboardPage({super.key});
@@ -30,16 +29,6 @@ class DashboardPage extends StatelessWidget {
               )
               .toList()
               .length;
-          final totalIncome = state.orderData.fold(
-            0,
-            (previousValue, element) => previousValue + element.totalPrice,
-          );
-          final totalUtang = state.orderData
-              .where((element) => element.paymentStatus == "unpaid")
-              .fold(
-                0,
-                (previousValue, element) => previousValue + element.totalPrice,
-              );
           return ListView(
             padding: EdgeInsets.all(15),
             children: [
@@ -57,22 +46,6 @@ class DashboardPage extends StatelessWidget {
                 colorCircle: Colors.orange.withValues(alpha: 0.15),
                 icons: Icons.timer_outlined,
                 colorIcon: Colors.orange,
-              ),
-              const SizedBox(height: 10),
-              DashboardContainerWidget(
-                title: "PEMASUKAN",
-                value: Helper.formatRupiah(totalIncome),
-                colorCircle: Colors.green.withValues(alpha: 0.15),
-                icons: Icons.account_balance_wallet_outlined,
-                colorIcon: Colors.green,
-              ),
-              const SizedBox(height: 10),
-              DashboardContainerWidget(
-                title: "TOTAL PIUTANG",
-                value: Helper.formatRupiah(totalUtang),
-                colorCircle: Colors.red.withValues(alpha: 0.15),
-                icons: Icons.warning_amber,
-                colorIcon: Colors.red,
               ),
               const SizedBox(height: 25),
               Text("Antrian Pesanan", style: TextTheme.of(context).titleLarge),
