@@ -1,7 +1,7 @@
 import 'dart:async';
 
-import 'package:flutter_golaundku/models/customer_model.dart';
-import 'package:flutter_golaundku/models/discount_model.dart';
+import 'package:flutter_golaundku/controller/customer_controller.dart';
+import 'package:flutter_golaundku/controller/discount_controller.dart';
 import 'package:flutter_golaundku/models/order_header.dart';
 import 'package:flutter_golaundku/models/order_item.dart';
 import 'package:flutter_golaundku/models/order_items_model.dart';
@@ -28,11 +28,6 @@ class OrderController extends GetxController {
   final actionError = ''.obs;
   final orderData = <OrderModel>[].obs;
   final detailOrderData = <OrderItemsModel>[].obs;
-  late Map<String, CustomerModel> _customerMap;
-  late Map<String, DiscountModel> _discountMap;
-
-  List<CustomerModel> _customers = [];
-  List<DiscountModel> _discounts = [];
 
   @override
   void onInit() {
@@ -45,23 +40,26 @@ class OrderController extends GetxController {
       isLoading.value = true;
       streamError.value = '';
       await _subscription?.cancel();
-      _customers = await customerRepository.getCustomers();
-      _discounts = await discountRepository.getDiscounts();
-      _customerMap = {
-        for (var customer in _customers) customer.customerId: customer,
-      };
-      _discountMap = {
-        for (var discount in _discounts) discount.discountId: discount,
-      };
       _subscription = orderRepository.streamOrders().listen(
         (orders) {
+          final customerController = Get.find<CustomerController>();
+          final discountController = Get.find<DiscountController>();
+          final customerMap = {
+            for (final customer in customerController.customerData)
+              customer.customerId: customer,
+          };
+          final discountMap = {
+            for (final discount in discountController.discountData)
+              discount.discountId: discount,
+          };
           final mappedOrders = orders.map((order) {
             return order.copyWith(
-              customerModel: _customerMap[order.customerId],
-              discountModel: _discountMap[order.discountId],
+              customerModel: customerMap[order.customerId],
+              discountModel: discountMap[order.discountId],
             );
           }).toList();
           orderData.assignAll(mappedOrders);
+          streamError.value = '';
           isLoading.value = false;
         },
         onError: (error) {
