@@ -108,7 +108,7 @@ class _InputServiceDialogWidgetState extends State<InputServiceDialogWidget> {
             else {
               showSnackBarWidget(
                 context,
-                serviceController.errorMessage.value,
+                serviceController.actionError.value,
                 Theme.of(context).colorScheme.error,
               );
             }

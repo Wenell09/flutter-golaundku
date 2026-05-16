@@ -9,7 +9,8 @@ class DiscountController extends GetxController {
   DiscountController(this.discountRepository);
   StreamSubscription<List<DiscountModel>>? _subscription;
   final isLoading = false.obs;
-  final errorMessage = ''.obs;
+  final streamError = ''.obs;
+  final actionError = ''.obs;
   final discountData = <DiscountModel>[].obs;
 
   @override
@@ -21,6 +22,7 @@ class DiscountController extends GetxController {
   Future<void> streamDiscounts() async {
     try {
       isLoading.value = true;
+      streamError.value = '';
       await _subscription?.cancel();
       _subscription = discountRepository.streamDiscounts().listen(
         (data) {
@@ -28,43 +30,45 @@ class DiscountController extends GetxController {
           isLoading.value = false;
         },
         onError: (error) {
-          errorMessage.value = error.toString();
+          streamError.value = error.toString();
           isLoading.value = false;
         },
       );
     } catch (e) {
-      errorMessage.value = e.toString();
+      streamError.value = e.toString();
       isLoading.value = false;
     }
   }
 
   Future<bool> createDiscount(Map<String, dynamic> data) async {
     try {
+      actionError.value = '';
       await discountRepository.addDiscount(data);
       return true;
     } catch (e) {
-      errorMessage.value = "Gagal menambahkan diskon!";
+      actionError.value = "Gagal menambahkan diskon!";
       return false;
     }
   }
 
   Future<bool> updateDiscount(Map<String, dynamic> data) async {
     try {
+      actionError.value = '';
       await discountRepository.updateDiscount(data);
       return true;
     } catch (e) {
-      errorMessage.value = "Gagal mengupdate diskon!";
-
+      actionError.value = "Gagal mengupdate diskon!";
       return false;
     }
   }
 
   Future<bool> deleteDiscount(String discountId) async {
     try {
+      actionError.value = '';
       await discountRepository.deleteDiscount(discountId);
       return true;
     } catch (e) {
-      errorMessage.value = "Gagal menghapus diskon!";
+      actionError.value = "Gagal menghapus diskon!";
       return false;
     }
   }

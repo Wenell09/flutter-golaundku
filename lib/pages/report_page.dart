@@ -1,9 +1,9 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_golaundku/bloc/customer/customer_bloc.dart';
-import 'package:flutter_golaundku/bloc/order/order_bloc.dart';
+import 'package:flutter_golaundku/controller/customer_controller.dart';
+import 'package:flutter_golaundku/controller/order_controller.dart';
 import 'package:flutter_golaundku/helpers/helper.dart';
+import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
 class ReportPage extends StatelessWidget {
@@ -11,133 +11,118 @@ class ReportPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<OrderBloc, OrderState>(
-      buildWhen: (previous, current) {
-        return current is OrderLoading || current is OrderLoaded;
-      },
-      builder: (context, state) {
-        if (state is OrderLoading) {
-          return Center(child: const CircularProgressIndicator());
-        } else if (state is OrderLoaded) {
-          final dailyDataIncomePaid = Helper.generateDailyIncome(
-            state.orderData,
-          );
-          final barDataIncomePaid = generateBarDataGeneric(
-            data: dailyDataIncomePaid,
-            gradientColors: [Colors.green.shade700, Colors.green.shade300],
-          );
-          final labelIncomePaid = dailyDataIncomePaid.keys
-              .map((date) => DateFormat('dd/MM').format(date))
-              .toList();
-          final dailyDataOrders = Helper.generateDailyOrderCount(
-            state.orderData,
-          );
-          final chartDataOrders = generateBarDataGeneric(
-            data: dailyDataOrders,
-            gradientColors: [Colors.blue.shade700, Colors.blue.shade300],
-          );
-          final labelOrders = dailyDataOrders.keys
-              .map((date) => DateFormat('dd/MM').format(date))
-              .toList();
-
-          final totalOrder = state.orderData.length;
-          final totalIncome = state.orderData.fold(
+    final orderController = Get.find<OrderController>();
+    final customerController = Get.find<CustomerController>();
+    return Obx(() {
+      if (orderController.isLoading.value) {
+        return const Center(child: CircularProgressIndicator());
+      }
+      final orderData = orderController.orderData;
+      final dailyDataIncomePaid = Helper.generateDailyIncome(orderData);
+      final barDataIncomePaid = generateBarDataGeneric(
+        data: dailyDataIncomePaid,
+        gradientColors: [Colors.green.shade700, Colors.green.shade300],
+      );
+      final labelIncomePaid = dailyDataIncomePaid.keys
+          .map((date) => DateFormat('dd/MM').format(date))
+          .toList();
+      final dailyDataOrders = Helper.generateDailyOrderCount(orderData);
+      final chartDataOrders = generateBarDataGeneric(
+        data: dailyDataOrders,
+        gradientColors: [Colors.blue.shade700, Colors.blue.shade300],
+      );
+      final labelOrders = dailyDataOrders.keys
+          .map((date) => DateFormat('dd/MM').format(date))
+          .toList();
+      final totalOrder = orderData.length;
+      final totalIncome = orderData.fold(
+        0,
+        (previousValue, element) => previousValue + element.totalPrice,
+      );
+      final totalPaid = orderData
+          .where((element) => element.paymentStatus == "paid")
+          .fold(
             0,
             (previousValue, element) => previousValue + element.totalPrice,
           );
-          final totalPaid = state.orderData
-              .where((element) => element.paymentStatus == "paid")
-              .fold(
-                0,
-                (previousValue, element) => previousValue + element.totalPrice,
-              );
-          final totalUtang = state.orderData
-              .where((element) => element.paymentStatus == "unpaid")
-              .fold(
-                0,
-                (previousValue, element) => previousValue + element.totalPrice,
-              );
-          return BlocBuilder<CustomerBloc, CustomerState>(
-            builder: (context, customerState) {
-              final totalCustomer =
-                  (customerState as CustomerLoaded).customerData.length;
-              return ListView(
-                padding: EdgeInsets.all(15),
-                children: [
-                  DashboardContainerWidget(
-                    title: "PEMASUKAN",
-                    value: Helper.formatRupiah(totalIncome),
-                    colorCircle: Colors.green.withValues(alpha: 0.15),
-                    icons: Icons.account_balance_wallet_outlined,
-                    colorIcon: Colors.green,
-                  ),
-                  const SizedBox(height: 10),
-                  DashboardContainerWidget(
-                    title: "TOTAL TERBAYAR",
-                    value: Helper.formatRupiah(totalPaid),
-                    colorCircle: Colors.green.withValues(alpha: 0.15),
-                    icons: Icons.done_all_outlined,
-                    colorIcon: Colors.green,
-                  ),
-                  const SizedBox(height: 10),
-                  DashboardContainerWidget(
-                    title: "TOTAL PIUTANG",
-                    value: Helper.formatRupiah(totalUtang),
-                    colorCircle: Colors.red.withValues(alpha: 0.15),
-                    icons: Icons.warning_amber,
-                    colorIcon: Colors.red,
-                  ),
-                  const SizedBox(height: 10),
-                  DashboardContainerWidget(
-                    title: "TOTAL ORDER",
-                    value: totalOrder.toString(),
-                    colorCircle: Colors.blue.withValues(alpha: 0.15),
-                    icons: Icons.shopping_bag_outlined,
-                    colorIcon: Theme.of(context).colorScheme.primary,
-                  ),
-                  const SizedBox(height: 10),
-                  DashboardContainerWidget(
-                    title: "TOTAL PELANGGAN",
-                    value: totalCustomer.toString(),
-                    colorCircle: Colors.purple.withValues(alpha: 0.15),
-                    icons: Icons.person_2_outlined,
-                    colorIcon: Colors.purple,
-                  ),
-                  const SizedBox(height: 10),
-                  ModernReportChart(
-                    title: "Pendapatan Masuk",
-                    subtitle: "Total nota lunas per hari",
-                    themeColor: Colors.green,
-                    barGroups: barDataIncomePaid,
-                    labels: labelIncomePaid,
-                    maxY: dailyDataIncomePaid.values.isEmpty
-                        ? 100
-                        : dailyDataIncomePaid.values.reduce(
-                                (a, b) => a > b ? a : b,
-                              ) *
-                              1.2,
-                  ),
-                  ModernReportChart(
-                    title: "Produktivitas Laundry",
-                    subtitle: "Jumlah order yang masuk harian",
-                    themeColor: Colors.blue,
-                    barGroups: chartDataOrders,
-                    labels: labelOrders,
-                    maxY: dailyDataOrders.values.isEmpty
-                        ? 10
-                        : dailyDataOrders.values
-                                  .reduce((a, b) => a > b ? a : b)
-                                  .toDouble() *
-                              1.2,
-                  ),
-                ],
-              );
-            },
+      final totalUtang = orderData
+          .where((element) => element.paymentStatus == "unpaid")
+          .fold(
+            0,
+            (previousValue, element) => previousValue + element.totalPrice,
           );
-        }
-        return Container();
-      },
-    );
+      final totalCustomer = customerController.customerData.length;
+      return ListView(
+        padding: const EdgeInsets.all(15),
+        children: [
+          DashboardContainerWidget(
+            title: "PEMASUKAN",
+            value: Helper.formatRupiah(totalIncome),
+            colorCircle: Colors.green.withValues(alpha: 0.15),
+            icons: Icons.account_balance_wallet_outlined,
+            colorIcon: Colors.green,
+          ),
+          const SizedBox(height: 10),
+          DashboardContainerWidget(
+            title: "TOTAL TERBAYAR",
+            value: Helper.formatRupiah(totalPaid),
+            colorCircle: Colors.green.withValues(alpha: 0.15),
+            icons: Icons.done_all_outlined,
+            colorIcon: Colors.green,
+          ),
+          const SizedBox(height: 10),
+          DashboardContainerWidget(
+            title: "TOTAL PIUTANG",
+            value: Helper.formatRupiah(totalUtang),
+            colorCircle: Colors.red.withValues(alpha: 0.15),
+            icons: Icons.warning_amber,
+            colorIcon: Colors.red,
+          ),
+          const SizedBox(height: 10),
+          DashboardContainerWidget(
+            title: "TOTAL ORDER",
+            value: totalOrder.toString(),
+            colorCircle: Colors.blue.withValues(alpha: 0.15),
+            icons: Icons.shopping_bag_outlined,
+            colorIcon: Theme.of(context).colorScheme.primary,
+          ),
+          const SizedBox(height: 10),
+          DashboardContainerWidget(
+            title: "TOTAL PELANGGAN",
+            value: totalCustomer.toString(),
+            colorCircle: Colors.purple.withValues(alpha: 0.15),
+            icons: Icons.person_2_outlined,
+            colorIcon: Colors.purple,
+          ),
+          const SizedBox(height: 10),
+          ModernReportChart(
+            title: "Pendapatan Masuk",
+            subtitle: "Total nota lunas per hari",
+            themeColor: Colors.green,
+            barGroups: barDataIncomePaid,
+            labels: labelIncomePaid,
+            maxY: dailyDataIncomePaid.values.isEmpty
+                ? 100
+                : dailyDataIncomePaid.values.reduce((a, b) => a > b ? a : b) *
+                      1.2,
+          ),
+          const SizedBox(height: 15),
+          ModernReportChart(
+            title: "Produktivitas Laundry",
+            subtitle: "Jumlah order yang masuk harian",
+            themeColor: Colors.blue,
+            barGroups: chartDataOrders,
+            labels: labelOrders,
+            maxY: dailyDataOrders.values.isEmpty
+                ? 10
+                : dailyDataOrders.values
+                          .reduce((a, b) => a > b ? a : b)
+                          .toDouble() *
+                      1.2,
+          ),
+        ],
+      );
+    });
   }
 }
 

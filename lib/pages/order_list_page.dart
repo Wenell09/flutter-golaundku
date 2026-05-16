@@ -1,24 +1,25 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_golaundku/bloc/order/order_bloc.dart';
+import 'package:flutter_golaundku/controller/order_controller.dart';
 import 'package:flutter_golaundku/helpers/helper.dart';
 import 'package:flutter_golaundku/pages/detail_order_page.dart';
+import 'package:get/get.dart';
 
 class OrderListPage extends StatefulWidget {
   const OrderListPage({super.key});
-
   @override
   State<OrderListPage> createState() => _OrderListPageState();
 }
 
 class _OrderListPageState extends State<OrderListPage> {
-  String keyword = "";
-  late TextEditingController searchCustomer;
+  late final TextEditingController searchCustomer;
+  late final OrderController orderController;
+  final keyword = ''.obs;
+
   @override
   void initState() {
-    searchCustomer = TextEditingController();
-    context.read<OrderBloc>().add(StartOrderStream());
     super.initState();
+    searchCustomer = TextEditingController();
+    orderController = Get.find<OrderController>();
   }
 
   @override
@@ -30,190 +31,188 @@ class _OrderListPageState extends State<OrderListPage> {
   @override
   Widget build(BuildContext context) {
     return ListView(
-      padding: EdgeInsets.all(15),
+      padding: const EdgeInsets.all(15),
       children: [
         TextField(
+          controller: searchCustomer,
           onChanged: (value) {
-            setState(() {
-              keyword = value;
-            });
+            keyword.value = value.toLowerCase();
           },
           decoration: InputDecoration(
             filled: true,
-            prefixIcon: Icon(Icons.search),
+            prefixIcon: const Icon(Icons.search),
             fillColor: Theme.of(context).colorScheme.onPrimary,
             hintText: "Cari ID atau nama pelanggan...",
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
           ),
         ),
         const SizedBox(height: 20),
-        BlocBuilder<OrderBloc, OrderState>(
-          buildWhen: (previous, current) {
-            return current is OrderLoading || current is OrderLoaded;
-          },
-          builder: (context, state) {
-            if (state is OrderLoading) {
-              return Center(child: CircularProgressIndicator());
-            } else if (state is OrderLoaded) {
-              final filteredData = state.orderData.where((data) {
-                return data.orderId.toLowerCase().contains(keyword) ||
-                    data.customerModel!.name.toLowerCase().contains(keyword);
-              }).toList();
-              if (state.orderData.isEmpty) {
-                return SizedBox(
-                  height: MediaQuery.of(context).size.height / 2,
-                  child: Column(
-                    mainAxisAlignment: .center,
-                    crossAxisAlignment: .center,
-                    children: [
-                      Icon(
-                        Icons.warning,
-                        color: Theme.of(context).colorScheme.error,
-                        size: 100,
-                      ),
-                      Text(
-                        "daftar order kosong!",
-                        style: Theme.of(context).textTheme.titleLarge,
-                      ),
-                    ],
+        Obx(() {
+          if (orderController.isLoading.value) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          final filteredData = orderController.orderData.where((data) {
+            return data.orderId.toLowerCase().contains(keyword.value) ||
+                data.customerModel!.name.toLowerCase().contains(keyword.value);
+          }).toList();
+          if (orderController.orderData.isEmpty) {
+            return SizedBox(
+              height: MediaQuery.of(context).size.height / 2,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.warning,
+                    color: Theme.of(context).colorScheme.error,
+                    size: 100,
                   ),
-                );
-              }
-              return ListView.builder(
-                physics: ScrollPhysics(),
-                shrinkWrap: true,
-                itemBuilder: (context, index) {
-                  final data = filteredData[index];
-                  return GestureDetector(
-                    onTap: () => Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => DetailOrderPage(orderModel: data),
-                      ),
-                    ),
-                    child: Card(
-                      child: Padding(
-                        padding: EdgeInsets.all(10),
-                        child: Column(
-                          spacing: 5,
-                          crossAxisAlignment: .start,
+                  Text(
+                    "Daftar order kosong!",
+                    style: Theme.of(context).textTheme.titleLarge,
+                  ),
+                ],
+              ),
+            );
+          }
+          if (filteredData.isEmpty) {
+            return SizedBox(
+              height: MediaQuery.of(context).size.height / 2,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(Icons.search_off, size: 100),
+                  Text(
+                    "Order tidak ditemukan!",
+                    style: Theme.of(context).textTheme.titleLarge,
+                  ),
+                ],
+              ),
+            );
+          }
+
+          return ListView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: filteredData.length,
+            itemBuilder: (context, index) {
+              final data = filteredData[index];
+              return GestureDetector(
+                onTap: () {
+                  Get.to(() => DetailOrderPage(orderModel: data));
+                },
+                child: Card(
+                  child: Padding(
+                    padding: const EdgeInsets.all(10),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              data.orderId,
+                              style: Theme.of(context).textTheme.bodyMedium!
+                                  .copyWith(
+                                    fontWeight: FontWeight.bold,
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.primary,
+                                  ),
+                            ),
+                            PopupMenuButton<String>(
+                              onSelected: (value) async {
+                                await orderController.updateOrderStatus(
+                                  data.orderId,
+                                  value,
+                                );
+                              },
+                              itemBuilder: (context) => [
+                                _buildStatusItem("Masuk"),
+                                _buildStatusItem("Diproses"),
+                                _buildStatusItem("Selesai"),
+                                _buildStatusItem("Diantar"),
+                              ],
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 12,
+                                  vertical: 8,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: getStatusColor(
+                                    data.status,
+                                  ).withValues(alpha: 0.10),
+                                  borderRadius: BorderRadius.circular(10),
+                                  border: Border.all(
+                                    color: getStatusColor(data.status),
+                                  ),
+                                ),
+                                child: Row(
+                                  children: [
+                                    Text(
+                                      data.status,
+                                      style: TextStyle(
+                                        color: getStatusColor(data.status),
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 5),
+                                    Icon(
+                                      Icons.arrow_drop_down,
+                                      size: 18,
+                                      color: getStatusColor(data.status),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 5),
+                        Text(
+                          data.customerModel!.name,
+                          style: Theme.of(context).textTheme.bodyLarge!
+                              .copyWith(fontWeight: FontWeight.bold),
+                        ),
+                        const Divider(),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Row(
-                              mainAxisAlignment: .spaceBetween,
                               children: [
-                                Text(
-                                  data.orderId,
-                                  style: TextTheme.of(context).bodyMedium!
-                                      .copyWith(
-                                        fontWeight: FontWeight.bold,
-                                        color: Theme.of(
-                                          context,
-                                        ).colorScheme.primary,
-                                      ),
+                                Icon(
+                                  Icons.date_range,
+                                  size: 15,
+                                  color: Theme.of(context).colorScheme.primary,
                                 ),
-                                PopupMenuButton<String>(
-                                  onSelected: (value) {
-                                    context.read<OrderBloc>().add(
-                                      UpdateStatusOrder(
-                                        orderId: data.orderId,
-                                        status: value,
-                                      ),
-                                    );
-                                  },
-                                  itemBuilder: (context) => [
-                                    _buildStatusItem("Masuk"),
-                                    _buildStatusItem("Diproses"),
-                                    _buildStatusItem("Selesai"),
-                                    _buildStatusItem("Diantar"),
-                                  ],
-                                  child: Container(
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 12,
-                                      vertical: 8,
-                                    ),
-                                    decoration: BoxDecoration(
-                                      color: getStatusColor(
-                                        data.status,
-                                      ).withValues(alpha: 0.10),
-                                      borderRadius: BorderRadius.circular(10),
-                                      border: Border.all(
-                                        color: getStatusColor(data.status),
-                                      ),
-                                    ),
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        Text(
-                                          data.status,
-                                          style: TextStyle(
-                                            color: getStatusColor(data.status),
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                        const SizedBox(width: 5),
-                                        Icon(
-                                          Icons.arrow_drop_down,
-                                          size: 18,
-                                          color: getStatusColor(data.status),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
+                                const SizedBox(width: 5),
+                                Text(
+                                  "Masuk: ${Helper.toIndoDate(data.orderDate)}",
                                 ),
                               ],
                             ),
-                            Text(
-                              data.customerModel!.name,
-                              style: TextTheme.of(context).bodyLarge!.copyWith(
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            Divider(),
                             Row(
-                              mainAxisAlignment: .spaceBetween,
                               children: [
-                                Row(
-                                  children: [
-                                    Icon(
-                                      Icons.date_range,
-                                      size: 15,
-                                      color: Theme.of(
-                                        context,
-                                      ).colorScheme.primary,
-                                    ),
-                                    Text(
-                                      "Masuk: ${Helper.toIndoDate(data.orderDate)}",
-                                    ),
-                                  ],
+                                Icon(
+                                  Icons.timer,
+                                  size: 15,
+                                  color: Theme.of(context).colorScheme.error,
                                 ),
-                                Row(
-                                  children: [
-                                    Icon(
-                                      Icons.timer,
-                                      size: 15,
-                                      color: Theme.of(
-                                        context,
-                                      ).colorScheme.error,
-                                    ),
-                                    Text(
-                                      "Estimasi: ${Helper.toIndoDate(data.estimatedDate)}",
-                                    ),
-                                  ],
+                                const SizedBox(width: 5),
+                                Text(
+                                  "Estimasi: ${Helper.toIndoDate(data.estimatedDate)}",
                                 ),
                               ],
                             ),
                           ],
                         ),
-                      ),
+                      ],
                     ),
-                  );
-                },
-                itemCount: filteredData.length,
+                  ),
+                ),
               );
-            }
-            return Container();
-          },
-        ),
+            },
+          );
+        }),
       ],
     );
   }

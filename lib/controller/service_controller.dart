@@ -6,13 +6,16 @@ import 'package:get/get.dart';
 
 class ServiceController extends GetxController {
   final ServiceRepository serviceRepository;
+
   ServiceController(this.serviceRepository);
+
   StreamSubscription<List<ServiceModel>>? _subscription;
+
   final isLoading = false.obs;
-  final errorMessage = ''.obs;
+  final streamError = ''.obs;
+  final actionError = ''.obs;
   final allServices = <ServiceModel>[].obs;
   final serviceData = <ServiceModel>[].obs;
-
   @override
   void onInit() {
     super.onInit();
@@ -22,50 +25,55 @@ class ServiceController extends GetxController {
   Future<void> streamServices() async {
     try {
       isLoading.value = true;
+      streamError.value = '';
       await _subscription?.cancel();
       _subscription = serviceRepository.streamServices().listen(
         (data) {
           allServices.assignAll(data);
           serviceData.assignAll(data);
+          streamError.value = '';
           isLoading.value = false;
         },
         onError: (error) {
-          errorMessage.value = error.toString();
+          streamError.value = error.toString();
           isLoading.value = false;
         },
       );
     } catch (e) {
-      errorMessage.value = e.toString();
+      streamError.value = "Gagal memuat data layanan";
       isLoading.value = false;
     }
   }
 
   Future<bool> createService(Map<String, dynamic> data) async {
     try {
+      actionError.value = '';
       await serviceRepository.addService(data);
       return true;
     } catch (e) {
-      errorMessage.value = "gagal menambahkan layanan!";
+      actionError.value = "Gagal menambahkan layanan!";
       return false;
     }
   }
 
   Future<bool> updateService(Map<String, dynamic> data) async {
     try {
+      actionError.value = '';
       await serviceRepository.updateService(data);
       return true;
     } catch (e) {
-      errorMessage.value = "gagal mengupdate layanan!";
+      actionError.value = "Gagal mengupdate layanan!";
       return false;
     }
   }
 
   Future<bool> deleteService(String serviceId) async {
     try {
+      actionError.value = '';
       await serviceRepository.deleteService(serviceId);
       return true;
     } catch (e) {
-      errorMessage.value = "gagal menghapus layanan!";
+      actionError.value = "Gagal menghapus layanan!";
       return false;
     }
   }
@@ -76,7 +84,6 @@ class ServiceController extends GetxController {
       serviceData.assignAll(allServices);
       return;
     }
-
     final filtered = allServices.where((service) {
       return service.name.toLowerCase().contains(query);
     }).toList();

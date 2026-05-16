@@ -47,7 +47,7 @@ class _CustomerPageState extends State<CustomerPage> {
           if (customerController.isLoading.value) {
             return const Center(child: CircularProgressIndicator());
           }
-          if (customerController.errorMessage.value.isNotEmpty) {
+          if (customerController.streamError.value.isNotEmpty) {
             return SizedBox(
               height: MediaQuery.of(context).size.height / 2,
               child: Column(
@@ -158,7 +158,7 @@ class _CustomerPageState extends State<CustomerPage> {
                                           showSnackBarWidget(
                                             context,
                                             customerController
-                                                .errorMessage
+                                                .actionError
                                                 .value,
                                             Theme.of(context).colorScheme.error,
                                           );

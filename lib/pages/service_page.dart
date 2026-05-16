@@ -46,7 +46,7 @@ class _ServicePageState extends State<ServicePage> {
           if (serviceController.isLoading.value) {
             return const Center(child: CircularProgressIndicator());
           }
-          if (serviceController.errorMessage.value.isNotEmpty) {
+          if (serviceController.streamError.value.isNotEmpty) {
             return SizedBox(
               height: MediaQuery.of(context).size.height / 2,
               child: Column(
@@ -157,9 +157,7 @@ class _ServicePageState extends State<ServicePage> {
                                         } else {
                                           showSnackBarWidget(
                                             context,
-                                            serviceController
-                                                .errorMessage
-                                                .value,
+                                            serviceController.actionError.value,
                                             Theme.of(context).colorScheme.error,
                                           );
                                         }

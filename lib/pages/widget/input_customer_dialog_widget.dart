@@ -90,7 +90,7 @@ class _InputCustomerDialogWidgetState extends State<InputCustomerDialogWidget> {
             else {
               showSnackBarWidget(
                 context,
-                customerController.errorMessage.value,
+                customerController.actionError.value,
                 Theme.of(context).colorScheme.error,
               );
             }

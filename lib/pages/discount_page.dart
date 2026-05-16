@@ -3,14 +3,9 @@ import 'package:flutter_golaundku/controller/discount_controller.dart';
 import 'package:flutter_golaundku/pages/widget/input_discount_dialog_widget.dart';
 import 'package:get/get.dart';
 
-class DiscountPage extends StatefulWidget {
-  const DiscountPage({super.key});
+class DiscountPage extends StatelessWidget {
+  DiscountPage({super.key});
 
-  @override
-  State<DiscountPage> createState() => _DiscountPageState();
-}
-
-class _DiscountPageState extends State<DiscountPage> {
   final discountController = Get.find<DiscountController>();
 
   @override
@@ -19,11 +14,14 @@ class _DiscountPageState extends State<DiscountPage> {
       padding: const EdgeInsets.all(15),
       children: [
         const SizedBox(height: 20),
+
+        /// LOADING & STREAM ERROR
         Obx(() {
           if (discountController.isLoading.value) {
             return const Center(child: CircularProgressIndicator());
           }
-          if (discountController.errorMessage.value.isNotEmpty) {
+
+          if (discountController.streamError.value.isNotEmpty) {
             return SizedBox(
               height: MediaQuery.of(context).size.height / 2,
               child: Column(
@@ -42,7 +40,15 @@ class _DiscountPageState extends State<DiscountPage> {
               ),
             );
           }
-          if (discountController.discountData.isEmpty) {
+
+          return const SizedBox.shrink();
+        }),
+
+        /// EMPTY STATE
+        Obx(() {
+          if (discountController.discountData.isEmpty &&
+              !discountController.isLoading.value &&
+              discountController.streamError.value.isEmpty) {
             return SizedBox(
               height: MediaQuery.of(context).size.height / 2,
               child: Column(
@@ -61,12 +67,23 @@ class _DiscountPageState extends State<DiscountPage> {
               ),
             );
           }
+
+          return const SizedBox.shrink();
+        }),
+
+        /// LIST DATA
+        Obx(() {
+          if (discountController.discountData.isEmpty) {
+            return const SizedBox.shrink();
+          }
+
           return ListView.builder(
             physics: const NeverScrollableScrollPhysics(),
             shrinkWrap: true,
             itemCount: discountController.discountData.length,
             itemBuilder: (context, index) {
               final data = discountController.discountData[index];
+
               return Card(
                 child: Padding(
                   padding: const EdgeInsets.all(10),
@@ -87,6 +104,8 @@ class _DiscountPageState extends State<DiscountPage> {
                                   ),
                             ),
                           ),
+
+                          /// EDIT
                           IconButton(
                             onPressed: () {
                               Get.dialog(
@@ -105,6 +124,8 @@ class _DiscountPageState extends State<DiscountPage> {
                               color: Theme.of(context).colorScheme.primary,
                             ),
                           ),
+
+                          /// DELETE
                           IconButton(
                             onPressed: () {
                               Get.dialog(
@@ -118,11 +139,14 @@ class _DiscountPageState extends State<DiscountPage> {
                                       onPressed: () => Get.back(),
                                       child: const Text("Batal"),
                                     ),
+
                                     FilledButton(
                                       onPressed: () async {
                                         Get.back();
+
                                         final success = await discountController
                                             .deleteDiscount(data.discountId);
+
                                         if (success) {
                                           showSnackBarWidget(
                                             context,
@@ -135,7 +159,7 @@ class _DiscountPageState extends State<DiscountPage> {
                                           showSnackBarWidget(
                                             context,
                                             discountController
-                                                .errorMessage
+                                                .actionError
                                                 .value,
                                             Theme.of(context).colorScheme.error,
                                           );
@@ -160,6 +184,7 @@ class _DiscountPageState extends State<DiscountPage> {
                           ),
                         ],
                       ),
+
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -170,7 +195,9 @@ class _DiscountPageState extends State<DiscountPage> {
                                 size: 20,
                                 color: Theme.of(context).colorScheme.primary,
                               ),
+
                               const SizedBox(width: 5),
+
                               Text(
                                 data.type == "fixed"
                                     ? "Rp ${data.value}"
@@ -180,6 +207,7 @@ class _DiscountPageState extends State<DiscountPage> {
                               ),
                             ],
                           ),
+
                           Row(
                             children: [
                               Text(
@@ -187,7 +215,9 @@ class _DiscountPageState extends State<DiscountPage> {
                                 style: Theme.of(context).textTheme.bodyMedium!
                                     .copyWith(fontWeight: FontWeight.w500),
                               ),
+
                               const SizedBox(width: 5),
+
                               Text(
                                 data.active ? "Aktif" : "Tidak Aktif",
                                 style: Theme.of(context).textTheme.bodyMedium!

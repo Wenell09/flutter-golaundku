@@ -7,9 +7,13 @@ import 'package:get/get.dart';
 class CustomerController extends GetxController {
   final CustomerRepository customerRepository;
   CustomerController(this.customerRepository);
+
   StreamSubscription<List<CustomerModel>>? _subscription;
+
   final isLoading = false.obs;
-  final errorMessage = ''.obs;
+  final streamError = ''.obs;
+  final actionError = ''.obs;
+
   final allCustomer = <CustomerModel>[].obs;
   final customerData = <CustomerModel>[].obs;
 
@@ -22,50 +26,55 @@ class CustomerController extends GetxController {
   Future<void> streamCustomers() async {
     try {
       isLoading.value = true;
+      streamError.value = '';
       await _subscription?.cancel();
       _subscription = customerRepository.streamCustomers().listen(
         (data) {
           allCustomer.assignAll(data);
           customerData.assignAll(data);
+          streamError.value = '';
           isLoading.value = false;
         },
         onError: (error) {
-          errorMessage.value = error.toString();
+          streamError.value = error.toString();
           isLoading.value = false;
         },
       );
     } catch (e) {
-      errorMessage.value = e.toString();
+      streamError.value = "Gagal memuat data customer";
       isLoading.value = false;
     }
   }
 
   Future<bool> createCustomer(Map<String, dynamic> data) async {
     try {
+      actionError.value = '';
       await customerRepository.addCustomer(data);
       return true;
     } catch (e) {
-      errorMessage.value = "Gagal menambahkan customer!";
+      actionError.value = "Gagal menambahkan customer!";
       return false;
     }
   }
 
   Future<bool> updateCustomer(Map<String, dynamic> data) async {
     try {
+      actionError.value = '';
       await customerRepository.updateCustomer(data);
       return true;
     } catch (e) {
-      errorMessage.value = "Gagal mengupdate customer!";
+      actionError.value = "Gagal mengupdate customer!";
       return false;
     }
   }
 
   Future<bool> deleteCustomer(String customerId) async {
     try {
+      actionError.value = '';
       await customerRepository.deleteCustomer(customerId);
       return true;
     } catch (e) {
-      errorMessage.value = "Gagal menghapus customer!";
+      actionError.value = "Gagal menghapus customer!";
       return false;
     }
   }

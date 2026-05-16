@@ -15,6 +15,7 @@ class OrderController extends GetxController {
   final OrderRepository orderRepository;
   final CustomerRepository customerRepository;
   final DiscountRepository discountRepository;
+
   OrderController(
     this.orderRepository,
     this.customerRepository,
@@ -22,14 +23,16 @@ class OrderController extends GetxController {
   );
   StreamSubscription<List<OrderModel>>? _subscription;
   final isLoading = false.obs;
-  final errorMessage = ''.obs;
+  final isDetailLoading = false.obs;
+  final streamError = ''.obs;
+  final actionError = ''.obs;
   final orderData = <OrderModel>[].obs;
+  final detailOrderData = <OrderItemsModel>[].obs;
   late Map<String, CustomerModel> _customerMap;
   late Map<String, DiscountModel> _discountMap;
+
   List<CustomerModel> _customers = [];
   List<DiscountModel> _discounts = [];
-  final isDetailLoading = false.obs;
-  final detailOrderData = <OrderItemsModel>[].obs;
 
   @override
   void onInit() {
@@ -40,31 +43,34 @@ class OrderController extends GetxController {
   Future<void> streamOrders() async {
     try {
       isLoading.value = true;
+      streamError.value = '';
       await _subscription?.cancel();
       _customers = await customerRepository.getCustomers();
       _discounts = await discountRepository.getDiscounts();
-      _customerMap = {for (var c in _customers) c.customerId: c};
-      _discountMap = {for (var d in _discounts) d.discountId: d};
+      _customerMap = {
+        for (var customer in _customers) customer.customerId: customer,
+      };
+      _discountMap = {
+        for (var discount in _discounts) discount.discountId: discount,
+      };
       _subscription = orderRepository.streamOrders().listen(
         (orders) {
           final mappedOrders = orders.map((order) {
-            final customer = _customerMap[order.customerId];
-            final discount = _discountMap[order.discountId];
             return order.copyWith(
-              customerModel: customer,
-              discountModel: discount,
+              customerModel: _customerMap[order.customerId],
+              discountModel: _discountMap[order.discountId],
             );
           }).toList();
           orderData.assignAll(mappedOrders);
           isLoading.value = false;
         },
         onError: (error) {
-          errorMessage.value = error.toString();
+          streamError.value = error.toString();
           isLoading.value = false;
         },
       );
     } catch (e) {
-      errorMessage.value = "Gagal load master data";
+      streamError.value = "Gagal load data order";
       isLoading.value = false;
     }
   }
@@ -75,22 +81,25 @@ class OrderController extends GetxController {
   ) async {
     try {
       isLoading.value = true;
+      actionError.value = '';
       await orderRepository.addOrder(orderHeader, items);
       isLoading.value = false;
       return true;
     } catch (e) {
-      errorMessage.value = "Gagal menambahkan orders!";
+      actionError.value = "Gagal menambahkan order!";
       isLoading.value = false;
+
       return false;
     }
   }
 
   Future<bool> updateOrderStatus(String orderId, String status) async {
     try {
+      actionError.value = '';
       await orderRepository.updateStatusOrder(orderId, status);
       return true;
     } catch (e) {
-      errorMessage.value = "Gagal mengupdate status order!";
+      actionError.value = "Gagal mengupdate status order!";
       return false;
     }
   }
@@ -100,10 +109,11 @@ class OrderController extends GetxController {
     String paymentStatus,
   ) async {
     try {
+      actionError.value = '';
       await orderRepository.paymentConfirm(orderId, paymentStatus);
       return true;
     } catch (e) {
-      errorMessage.value = "Gagal mengupdate konfirmasi pembayaran!";
+      actionError.value = "Gagal mengupdate konfirmasi pembayaran!";
       return false;
     }
   }
@@ -111,11 +121,12 @@ class OrderController extends GetxController {
   Future<void> getDetailOrder(String orderId) async {
     try {
       isDetailLoading.value = true;
+      actionError.value = '';
       final result = await orderRepository.getDetailOrder(orderId);
       detailOrderData.assignAll(result);
       isDetailLoading.value = false;
     } catch (e) {
-      errorMessage.value = "Gagal mengambil detail order!";
+      actionError.value = "Gagal mengambil detail order!";
       isDetailLoading.value = false;
     }
   }
@@ -126,6 +137,7 @@ class OrderController extends GetxController {
     bool deliveryStatus,
   ) async {
     try {
+      actionError.value = '';
       await orderRepository.updateStatusDeliveryOrder(
         orderItemId,
         deliveryStatus,
@@ -133,9 +145,17 @@ class OrderController extends GetxController {
       await getDetailOrder(orderId);
       return true;
     } catch (e) {
-      errorMessage.value = "Gagal mengupdate status pengiriman!";
+      actionError.value = "Gagal mengupdate status pengiriman!";
       return false;
     }
+  }
+
+  void clearActionError() {
+    actionError.value = '';
+  }
+
+  void clearStreamError() {
+    streamError.value = '';
   }
 
   @override

@@ -118,7 +118,7 @@ class _InputDiscountDialogWidgetState extends State<InputDiscountDialogWidget> {
             } else {
               showSnackBarWidget(
                 context,
-                discountController.errorMessage.value,
+                discountController.actionError.value,
                 Theme.of(context).colorScheme.error,
               );
             }
