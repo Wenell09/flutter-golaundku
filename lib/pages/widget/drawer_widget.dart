@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_golaundku/bloc/auth/auth_bloc.dart';
-import 'package:flutter_golaundku/bloc/navigation/navigation_bloc.dart';
-import 'package:flutter_golaundku/bloc/save_userId/save_user_id_bloc.dart';
-import 'package:flutter_golaundku/bloc/user/user_bloc.dart';
+import 'package:flutter_golaundku/controller/auth_controller.dart';
+import 'package:flutter_golaundku/controller/navigation_controller.dart';
+import 'package:flutter_golaundku/controller/user_controller.dart';
 import 'package:flutter_golaundku/models/app_menu.dart';
 import 'package:flutter_golaundku/pages/login_page.dart';
+import 'package:get/get.dart';
 
 class DrawerWidget extends StatelessWidget {
   final List<AppMenu> menus;
@@ -13,95 +12,79 @@ class DrawerWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<UserBloc, UserState>(
-      builder: (context, state) {
-        if (state is UserLoaded) {
-          return Drawer(
-            child: Column(
-              children: [
-                UserAccountsDrawerHeader(
-                  accountName: Text(state.userData.name),
-                  accountEmail: Text(state.userData.role),
-                ),
-                Expanded(
-                  child: BlocBuilder<NavigationBloc, NavigationState>(
-                    builder: (context, navState) {
-                      return NavigationDrawer(
-                        selectedIndex: navState.currentIndex >= menus.length
-                            ? 0
-                            : navState.currentIndex,
-                        onDestinationSelected: (index) {
-                          context.read<NavigationBloc>().add(ChangePage(index));
-                          Navigator.pop(context);
-                        },
-                        children: menus
-                            .map(
-                              (menu) => NavigationDrawerDestination(
-                                icon: Icon(menu.icon),
-                                label: Text(menu.title),
-                              ),
-                            )
-                            .toList(),
-                      );
-                    },
-                  ),
-                ),
-                const Divider(),
-                BlocListener<AuthBloc, AuthState>(
-                  listener: (context, state) {
-                    if (state is AuthLogoutSuccess) {
-                      context.read<SaveUserIdBloc>().add(
-                        SaveUserId(userId: ""),
-                      );
-                    }
-                  },
-                  child: SafeArea(
-                    top: false,
-                    child: ListTile(
-                      leading: const Icon(Icons.logout, color: Colors.red),
-                      title: const Text("Keluar"),
-                      onTap: () {
-                        showDialog(
-                          context: context,
-                          barrierDismissible: false,
-                          builder: (context) {
-                            return AlertDialog(
-                              content: const Text("Apakah kamu ingin keluar?"),
-                              actions: [
-                                TextButton(
-                                  onPressed: () => Navigator.pop(context),
-                                  child: const Text("Tidak"),
-                                ),
-                                TextButton(
-                                  onPressed: () {
-                                    context.read<AuthBloc>().add(LogoutUser());
-                                    context.read<NavigationBloc>().add(
-                                      ChangePage(0),
-                                    );
-                                    Navigator.pushAndRemoveUntil(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (_) => const LoginPage(),
-                                      ),
-                                      (route) => false,
-                                    );
-                                  },
-                                  child: const Text("Ya"),
-                                ),
-                              ],
-                            );
-                          },
-                        );
-                      },
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          );
-        }
+    final userController = Get.find<UserController>();
+    final navigationController = Get.find<NavigationController>();
+    final authController = Get.find<AuthController>();
+    return Obx(() {
+      final user = userController.userData.value;
+      if (user == null) {
         return const SizedBox();
-      },
-    );
+      }
+      return Drawer(
+        child: Column(
+          children: [
+            UserAccountsDrawerHeader(
+              accountName: Text(user.name),
+              accountEmail: Text(user.role),
+            ),
+            Expanded(
+              child: Obx(() {
+                int safeIndex =
+                    navigationController.currentIndex.value >= menus.length
+                    ? 0
+                    : navigationController.currentIndex.value;
+                return NavigationDrawer(
+                  selectedIndex: safeIndex,
+
+                  onDestinationSelected: (index) {
+                    navigationController.changeIndex(index);
+
+                    Navigator.pop(context);
+                  },
+                  children: menus
+                      .map(
+                        (menu) => NavigationDrawerDestination(
+                          icon: Icon(menu.icon),
+                          label: Text(menu.title),
+                        ),
+                      )
+                      .toList(),
+                );
+              }),
+            ),
+            const Divider(),
+            SafeArea(
+              top: false,
+              child: ListTile(
+                leading: const Icon(Icons.logout, color: Colors.red),
+                title: const Text("Keluar"),
+
+                onTap: () {
+                  Get.dialog(
+                    AlertDialog(
+                      content: const Text("Apakah kamu ingin keluar?"),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Get.back(),
+                          child: const Text("Tidak"),
+                        ),
+                        TextButton(
+                          onPressed: () async {
+                            await authController.logout();
+                            navigationController.changeIndex(0);
+                            Get.offAll(() => const LoginPage());
+                          },
+                          child: const Text("Ya"),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
+      );
+    });
   }
 }

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_golaundku/bloc/customer/customer_bloc.dart';
+import 'package:flutter_golaundku/controller/customer_controller.dart';
+import 'package:get/get.dart';
 
 class InputCustomerDialogWidget extends StatefulWidget {
   final String customerId;
@@ -55,19 +55,18 @@ class _InputCustomerDialogWidgetState extends State<InputCustomerDialogWidget> {
         ),
       ),
       actions: [
-        TextButton(
-          onPressed: () => Navigator.pop(context),
-          child: const Text("Batal"),
-        ),
+        TextButton(onPressed: () => Get.back(), child: const Text("Batal")),
         FilledButton(
-          onPressed: () {
-            if (widget.customerId.isEmpty || widget.customerId == "") {
+          onPressed: () async {
+            final customerController = Get.find<CustomerController>();
+            bool success = false;
+            if (widget.customerId.isEmpty) {
               final data = {
                 "name": inputName.text,
                 "phone": inputPhone.text,
                 "address": inputAddress.text,
               };
-              context.read<CustomerBloc>().add(AddCustomer(data: data));
+              success = await customerController.createCustomer(data);
             } else {
               final data = {
                 "customer_id": widget.customerId,
@@ -75,10 +74,28 @@ class _InputCustomerDialogWidgetState extends State<InputCustomerDialogWidget> {
                 "phone": inputPhone.text,
                 "address": inputAddress.text,
               };
-              context.read<CustomerBloc>().add(UpdateCustomer(data: data));
+              success = await customerController.updateCustomer(data);
             }
-            Navigator.pop(context);
+            Get.back();
+            if (success) {
+              showSnackBarWidget(
+                context,
+                widget.customerId.isEmpty
+                    ? "Berhasil menambahkan customer!"
+                    : "Berhasil update customer!",
+                Theme.of(context).colorScheme.primary,
+              );
+            }
+            // ERROR
+            else {
+              showSnackBarWidget(
+                context,
+                customerController.errorMessage.value,
+                Theme.of(context).colorScheme.error,
+              );
+            }
           },
+
           child: const Text("Simpan"),
         ),
       ],
@@ -102,4 +119,19 @@ class _InputCustomerDialogWidgetState extends State<InputCustomerDialogWidget> {
       ),
     );
   }
+}
+
+void showSnackBarWidget(BuildContext context, String text, Color colors) {
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(
+      backgroundColor: colors,
+      duration: Duration(seconds: 1),
+      content: Text(
+        text,
+        style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+          color: Theme.of(context).colorScheme.onPrimary,
+        ),
+      ),
+    ),
+  );
 }

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_golaundku/bloc/navigation/navigation_bloc.dart';
-import 'package:flutter_golaundku/bloc/user/user_bloc.dart';
+import 'package:flutter_golaundku/controller/navigation_controller.dart';
+import 'package:flutter_golaundku/controller/user_controller.dart';
 import 'package:flutter_golaundku/models/app_menu.dart';
 import 'package:flutter_golaundku/pages/customer_page.dart';
 import 'package:flutter_golaundku/pages/dashboard_page.dart';
@@ -15,6 +14,7 @@ import 'package:flutter_golaundku/pages/widget/drawer_widget.dart';
 import 'package:flutter_golaundku/pages/widget/input_customer_dialog_widget.dart';
 import 'package:flutter_golaundku/pages/widget/input_discount_dialog_widget.dart';
 import 'package:flutter_golaundku/pages/widget/input_service_dialog_widget.dart';
+import 'package:get/get.dart';
 
 class MainPage extends StatelessWidget {
   final String userId;
@@ -22,35 +22,28 @@ class MainPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<UserBloc, UserState>(
-      builder: (context, userState) {
-        if (userState is UserLoaded) {
-          return BlocBuilder<NavigationBloc, NavigationState>(
-            builder: (context, navState) {
-              final menus = getFilteredMenus(
-                userId,
-                userState.userData.role,
-                context,
-              );
-              int safeIndex = navState.currentIndex >= menus.length
-                  ? 0
-                  : navState.currentIndex;
-              final currentMenu = menus[safeIndex];
-              return Scaffold(
-                appBar: AppBar(title: Text(currentMenu.title)),
-                floatingActionButton: currentMenu.fab,
-                drawer: DrawerWidget(menus: menus),
-                body: IndexedStack(
-                  index: safeIndex,
-                  children: menus.map((m) => m.page).toList(),
-                ),
-              );
-            },
-          );
-        }
+    final userController = Get.find<UserController>();
+    final navigationController = Get.find<NavigationController>();
+    return Obx(() {
+      final user = userController.userData.value;
+      if (user == null) {
         return const Scaffold(body: Center(child: CircularProgressIndicator()));
-      },
-    );
+      }
+      final menus = getFilteredMenus(userId, user.role, context);
+      int safeIndex = navigationController.currentIndex.value >= menus.length
+          ? 0
+          : navigationController.currentIndex.value;
+      final currentMenu = menus[safeIndex];
+      return Scaffold(
+        appBar: AppBar(title: Text(currentMenu.title)),
+        floatingActionButton: currentMenu.fab,
+        drawer: DrawerWidget(menus: menus),
+        body: IndexedStack(
+          index: safeIndex,
+          children: menus.map((m) => m.page).toList(),
+        ),
+      );
+    });
   }
 }
 

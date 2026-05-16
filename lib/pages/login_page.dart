@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_golaundku/bloc/auth/auth_bloc.dart';
-import 'package:flutter_golaundku/bloc/save_userId/save_user_id_bloc.dart';
-import 'package:flutter_golaundku/bloc/user/user_bloc.dart';
+import 'package:flutter_golaundku/controller/auth_controller.dart';
+import 'package:flutter_golaundku/controller/user_controller.dart';
 import 'package:flutter_golaundku/pages/main_page.dart';
+import 'package:get/get.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -13,6 +12,9 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  final authController = Get.find<AuthController>();
+  final userController = Get.find<UserController>();
+
   late ValueNotifier<bool> isShowPassword;
   late TextEditingController inputName;
   late TextEditingController inputPassword;
@@ -109,76 +111,57 @@ class _LoginPageState extends State<LoginPage> {
             ),
           ),
           const SizedBox(height: 30),
-          BlocListener<AuthBloc, AuthState>(
-            listener: (context, state) {
-              if (state is AuthSuccess) {
-                context.read<SaveUserIdBloc>().add(
-                  SaveUserId(userId: state.userId),
-                );
-                context.read<UserBloc>().add(GetUser(userId: state.userId));
-                Navigator.of(context).pushReplacement(
-                  MaterialPageRoute(
-                    builder: (context) => MainPage(userId: state.userId),
+          GestureDetector(
+            onTap: () async {
+              await authController.login(
+                name: inputName.text,
+                password: inputPassword.text,
+              );
+              if (authController.userId.value.isNotEmpty) {
+                await userController.getUser(authController.userId.value);
+                Get.offAll(() => MainPage(userId: authController.userId.value));
+              }
+              if (authController.errorMessage.value.isNotEmpty) {
+                Get.dialog(
+                  AlertDialog(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    content: Text(
+                      authController.errorMessage.value,
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                   ),
-                );
-              } else if (state is AuthError) {
-                showDialog(
-                  context: context,
-                  builder: (context) {
-                    return AlertDialog(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      content: Text(
-                        "Pastikan Username dan Password sesuai!",
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    );
-                  },
                 );
               }
             },
-            child: BlocBuilder<AuthBloc, AuthState>(
-              builder: (context, state) {
-                return GestureDetector(
-                  onTap: () {
-                    context.read<AuthBloc>().add(
-                      LoginUser(
-                        name: inputName.text,
-                        password: inputPassword.text,
-                      ),
-                    );
-                  },
-                  child: Container(
-                    height: 55,
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.primary,
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: (state is AuthLoading)
-                        ? Center(
-                            child: CircularProgressIndicator(
-                              color: Theme.of(context).colorScheme.onPrimary,
-                            ),
-                          )
-                        : Center(
-                            child: Text(
-                              "Sign In",
-                              style: Theme.of(context).textTheme.titleLarge!
-                                  .copyWith(
-                                    color: Theme.of(
-                                      context,
-                                    ).colorScheme.onPrimary,
-                                  ),
-                            ),
-                          ),
-                  ),
-                );
-              },
+            child: Container(
+              height: 55,
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.primary,
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Obx(() {
+                return authController.isLoading.value
+                    ? Center(
+                        child: CircularProgressIndicator(
+                          color: Theme.of(context).colorScheme.onPrimary,
+                        ),
+                      )
+                    : Center(
+                        child: Text(
+                          "Sign In",
+                          style: Theme.of(context).textTheme.titleLarge!
+                              .copyWith(
+                                color: Theme.of(context).colorScheme.onPrimary,
+                              ),
+                        ),
+                      );
+              }),
             ),
           ),
         ],

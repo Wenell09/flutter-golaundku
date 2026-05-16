@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_golaundku/bloc/discount/discount_bloc.dart';
+import 'package:flutter_golaundku/controller/discount_controller.dart';
+import 'package:get/get.dart';
 
 class InputDiscountDialogWidget extends StatefulWidget {
   final String discountId;
@@ -72,12 +72,9 @@ class _InputDiscountDialogWidgetState extends State<InputDiscountDialogWidget> {
         ),
       ),
       actions: [
-        TextButton(
-          onPressed: () => Navigator.pop(context),
-          child: const Text("Batal"),
-        ),
+        TextButton(onPressed: () => Get.back(), child: const Text("Batal")),
         FilledButton(
-          onPressed: () {
+          onPressed: () async {
             int val = int.tryParse(inputValue.text) ?? 0;
             if (selectedType == "percentage") {
               if (val < 1 || val > 100) {
@@ -89,14 +86,16 @@ class _InputDiscountDialogWidgetState extends State<InputDiscountDialogWidget> {
                 return;
               }
             }
-            if (widget.discountId.isEmpty || widget.discountId == "") {
+            final discountController = Get.find<DiscountController>();
+            bool success = false;
+            if (widget.discountId.isEmpty) {
               final data = {
                 "name": inputName.text,
                 "type": selectedType,
                 "value": val,
                 "active": selectedActive,
               };
-              context.read<DiscountBloc>().add(AddDiscount(data: data));
+              success = await discountController.createDiscount(data);
             } else {
               final data = {
                 "discount_id": widget.discountId,
@@ -105,9 +104,24 @@ class _InputDiscountDialogWidgetState extends State<InputDiscountDialogWidget> {
                 "value": val,
                 "active": selectedActive,
               };
-              context.read<DiscountBloc>().add(UpdateDiscount(data: data));
+              success = await discountController.updateDiscount(data);
             }
-            Navigator.pop(context);
+            Get.back();
+            if (success) {
+              showSnackBarWidget(
+                context,
+                widget.discountId.isEmpty
+                    ? "Berhasil menambahkan discount!"
+                    : "Berhasil update discount!",
+                Theme.of(context).colorScheme.primary,
+              );
+            } else {
+              showSnackBarWidget(
+                context,
+                discountController.errorMessage.value,
+                Theme.of(context).colorScheme.error,
+              );
+            }
           },
           child: const Text("Simpan"),
         ),
@@ -160,4 +174,19 @@ class _InputDiscountDialogWidgetState extends State<InputDiscountDialogWidget> {
       ),
     );
   }
+}
+
+void showSnackBarWidget(BuildContext context, String text, Color colors) {
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(
+      backgroundColor: colors,
+      duration: Duration(seconds: 1),
+      content: Text(
+        text,
+        style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+          color: Theme.of(context).colorScheme.onPrimary,
+        ),
+      ),
+    ),
+  );
 }

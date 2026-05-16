@@ -1,201 +1,180 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_golaundku/bloc/order/order_bloc.dart';
+import 'package:flutter_golaundku/controller/order_controller.dart';
+import 'package:get/get.dart';
 
 class DashboardPage extends StatelessWidget {
-  const DashboardPage({super.key});
-
+  DashboardPage({super.key});
+  final orderController = Get.find<OrderController>();
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<OrderBloc, OrderState>(
-      buildWhen: (previous, current) {
-        return current is OrderLoading || current is OrderLoaded;
-      },
-      builder: (context, state) {
-        if (state is OrderLoading) {
-          return Center(child: const CircularProgressIndicator());
-        } else if (state is OrderLoaded) {
-          final totalOrder = state.orderData.length;
-          final activeOrder = state.orderData
-              .where(
-                (element) =>
-                    element.status != "Selesai" && element.status != "Diantar",
-              )
-              .toList();
-          final totalActiveOrder = state.orderData
-              .where(
-                (element) =>
-                    element.status != "Selesai" && element.status != "Diantar",
-              )
-              .toList()
-              .length;
-          return ListView(
-            padding: EdgeInsets.all(15),
-            children: [
-              DashboardContainerWidget(
-                title: "TOTAL ORDER",
-                value: totalOrder.toString(),
-                colorCircle: Colors.blue.withValues(alpha: 0.15),
-                icons: Icons.shopping_bag_outlined,
-                colorIcon: Theme.of(context).colorScheme.primary,
-              ),
-              const SizedBox(height: 10),
-              DashboardContainerWidget(
-                title: "ORDER AKTIF",
-                value: totalActiveOrder.toString(),
-                colorCircle: Colors.orange.withValues(alpha: 0.15),
-                icons: Icons.timer_outlined,
-                colorIcon: Colors.orange,
-              ),
-              const SizedBox(height: 25),
-              Text("Antrian Pesanan", style: TextTheme.of(context).titleLarge),
-              const SizedBox(height: 5),
-              ListView.builder(
-                physics: const ScrollPhysics(),
-                shrinkWrap: true,
-                itemBuilder: (context, index) {
-                  final data = activeOrder[index];
-                  return Card(
-                    child: Padding(
-                      padding: const EdgeInsets.all(10),
-                      child: Column(
+    return Obx(() {
+      if (orderController.isLoading.value) {
+        return const Center(child: CircularProgressIndicator());
+      }
+      final totalOrder = orderController.orderData.length;
+      final activeOrder = orderController.orderData.where((element) {
+        return element.status != "Selesai" && element.status != "Diantar";
+      }).toList();
+      final totalActiveOrder = activeOrder.length;
+      return ListView(
+        padding: const EdgeInsets.all(15),
+        children: [
+          DashboardContainerWidget(
+            title: "TOTAL ORDER",
+            value: totalOrder.toString(),
+            colorCircle: Colors.blue.withValues(alpha: 0.15),
+            icons: Icons.shopping_bag_outlined,
+            colorIcon: Theme.of(context).colorScheme.primary,
+          ),
+          const SizedBox(height: 10),
+          DashboardContainerWidget(
+            title: "ORDER AKTIF",
+            value: totalActiveOrder.toString(),
+            colorCircle: Colors.orange.withValues(alpha: 0.15),
+            icons: Icons.timer_outlined,
+            colorIcon: Colors.orange,
+          ),
+          const SizedBox(height: 25),
+          Text("Antrian Pesanan", style: TextTheme.of(context).titleLarge),
+          const SizedBox(height: 5),
+          ListView.builder(
+            physics: const ScrollPhysics(),
+            shrinkWrap: true,
+            itemCount: activeOrder.length,
+            itemBuilder: (context, index) {
+              final data = activeOrder[index];
+              return Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(10),
+                  child: Column(
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Row(
-                            mainAxisAlignment: .spaceBetween,
-                            children: [
-                              Row(
-                                spacing: 5,
-                                children: [
-                                  Icon(
-                                    Icons.tag,
-                                    size: 15,
-                                    color: Theme.of(
-                                      context,
-                                    ).colorScheme.primary,
-                                  ),
-                                  Text(
-                                    data.orderId,
-                                    style: TextTheme.of(context).bodyMedium!
-                                        .copyWith(
-                                          fontWeight: FontWeight.bold,
-                                          color: Theme.of(
-                                            context,
-                                          ).colorScheme.primary,
-                                        ),
-                                  ),
-                                ],
-                              ),
-                              Container(
-                                padding: EdgeInsets.all(10),
-                                decoration: BoxDecoration(
-                                  color: (data.status == "Masuk")
-                                      ? Colors.blue.withValues(alpha: 0.15)
-                                      : Colors.orange.withValues(alpha: 0.15),
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                                child: Center(
-                                  child: Text(
-                                    data.status.toUpperCase(),
-                                    style: TextTheme.of(context).bodySmall!
-                                        .copyWith(
-                                          fontWeight: FontWeight.bold,
-                                          color: (data.status == "Masuk")
-                                              ? Theme.of(
-                                                  context,
-                                                ).colorScheme.primary
-                                              : Colors.deepOrange,
-                                        ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
                           Row(
                             spacing: 5,
                             children: [
                               Icon(
-                                Icons.person_2_outlined,
+                                Icons.tag,
                                 size: 15,
                                 color: Theme.of(context).colorScheme.primary,
                               ),
-                              Flexible(
-                                child: Text(
-                                  data.customerModel!.name,
-                                  style: TextTheme.of(context).bodyLarge!
-                                      .copyWith(fontWeight: FontWeight.bold),
-                                ),
+                              Text(
+                                data.orderId,
+                                style: TextTheme.of(context).bodyMedium!
+                                    .copyWith(
+                                      fontWeight: FontWeight.bold,
+                                      color: Theme.of(
+                                        context,
+                                      ).colorScheme.primary,
+                                    ),
                               ),
                             ],
                           ),
-                          const SizedBox(height: 10),
-                          GestureDetector(
-                            onTap: () {
-                              context.read<OrderBloc>().add(
-                                UpdateStatusOrder(
-                                  orderId: data.orderId,
-                                  status: (data.status == "Masuk")
-                                      ? "Diproses"
-                                      : "Selesai",
-                                ),
-                              );
-                              showSnackBarWidget(
-                                context,
-                                (data.status == "Masuk")
-                                    ? "Pesanan sedang diproses!"
-                                    : "Pesanan sudah selesai!",
-                              );
-                            },
-                            child: Container(
-                              padding: EdgeInsets.all(10),
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(5),
-                                color: (data.status == "Masuk")
-                                    ? Theme.of(context).colorScheme.primary
-                                    : Colors.green,
-                              ),
-                              child: Center(
-                                child: Row(
-                                  spacing: 5,
-                                  mainAxisAlignment: .center,
-                                  children: [
-                                    Icon(
-                                      (data.status == "Masuk")
-                                          ? Icons.play_arrow
-                                          : Icons.check,
-                                      color: Theme.of(
-                                        context,
-                                      ).colorScheme.onPrimary,
-                                    ),
-                                    Text(
-                                      (data.status == "Masuk")
-                                          ? "MULAI PROSES SEKARANG"
-                                          : "TANDAI SUDAH SELESAI",
-                                      style: TextTheme.of(context).bodySmall!
-                                          .copyWith(
-                                            fontWeight: FontWeight.bold,
-                                            color: Theme.of(
+                          Container(
+                            padding: const EdgeInsets.all(10),
+                            decoration: BoxDecoration(
+                              color: (data.status == "Masuk")
+                                  ? Colors.blue.withValues(alpha: 0.15)
+                                  : Colors.orange.withValues(alpha: 0.15),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: Center(
+                              child: Text(
+                                data.status.toUpperCase(),
+                                style: TextTheme.of(context).bodySmall!
+                                    .copyWith(
+                                      fontWeight: FontWeight.bold,
+                                      color: (data.status == "Masuk")
+                                          ? Theme.of(
                                               context,
-                                            ).colorScheme.onPrimary,
-                                          ),
+                                            ).colorScheme.primary
+                                          : Colors.deepOrange,
                                     ),
-                                  ],
-                                ),
                               ),
                             ),
                           ),
                         ],
                       ),
-                    ),
-                  );
-                },
-                itemCount: activeOrder.length,
-              ),
-            ],
-          );
-        }
-        return Container();
-      },
-    );
+                      Row(
+                        spacing: 5,
+                        children: [
+                          Icon(
+                            Icons.person_2_outlined,
+                            size: 15,
+                            color: Theme.of(context).colorScheme.primary,
+                          ),
+                          Flexible(
+                            child: Text(
+                              data.customerModel!.name,
+                              style: TextTheme.of(context).bodyLarge!.copyWith(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 10),
+                      GestureDetector(
+                        onTap: () async {
+                          await orderController.updateOrderStatus(
+                            data.orderId,
+                            (data.status == "Masuk") ? "Diproses" : "Selesai",
+                          );
+                          showSnackBarWidget(
+                            context,
+                            (data.status == "Masuk")
+                                ? "Pesanan sedang diproses!"
+                                : "Pesanan sudah selesai!",
+                          );
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(5),
+                            color: (data.status == "Masuk")
+                                ? Theme.of(context).colorScheme.primary
+                                : Colors.green,
+                          ),
+                          child: Center(
+                            child: Row(
+                              spacing: 5,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  (data.status == "Masuk")
+                                      ? Icons.play_arrow
+                                      : Icons.check,
+                                  color: Theme.of(
+                                    context,
+                                  ).colorScheme.onPrimary,
+                                ),
+                                Text(
+                                  (data.status == "Masuk")
+                                      ? "MULAI PROSES SEKARANG"
+                                      : "TANDAI SUDAH SELESAI",
+                                  style: TextTheme.of(context).bodySmall!
+                                      .copyWith(
+                                        fontWeight: FontWeight.bold,
+                                        color: Theme.of(
+                                          context,
+                                        ).colorScheme.onPrimary,
+                                      ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
+          ),
+        ],
+      );
+    });
   }
 }
 

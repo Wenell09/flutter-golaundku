@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_golaundku/bloc/service/service_bloc.dart';
+import 'package:flutter_golaundku/controller/service_controller.dart';
+import 'package:get/get.dart';
 
 class InputServiceDialogWidget extends StatefulWidget {
   final String serviceId;
@@ -61,19 +61,20 @@ class _InputServiceDialogWidgetState extends State<InputServiceDialogWidget> {
         ),
       ),
       actions: [
-        TextButton(
-          onPressed: () => Navigator.pop(context),
-          child: const Text("Batal"),
-        ),
+        TextButton(onPressed: () => Get.back(), child: const Text("Batal")),
+
         FilledButton(
-          onPressed: () {
+          onPressed: () async {
             if (selectedCategory == null) {
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(content: Text("Kategori harus dipilih")),
               );
+
               return;
             }
-            if (widget.serviceId.isEmpty || widget.serviceId == "") {
+            final serviceController = Get.find<ServiceController>();
+            bool success = false;
+            if (widget.serviceId.isEmpty) {
               final data = {
                 "name": inputName.text,
                 "category": selectedCategory,
@@ -81,7 +82,7 @@ class _InputServiceDialogWidgetState extends State<InputServiceDialogWidget> {
                 "min_weight": 4,
                 "duration": int.tryParse(inputDuration.text) ?? 0,
               };
-              context.read<ServiceBloc>().add(AddService(data: data));
+              success = await serviceController.createService(data);
             } else {
               final data = {
                 "service_id": widget.serviceId,
@@ -91,9 +92,26 @@ class _InputServiceDialogWidgetState extends State<InputServiceDialogWidget> {
                 "min_weight": 4,
                 "duration": int.tryParse(inputDuration.text) ?? 0,
               };
-              context.read<ServiceBloc>().add(UpdateService(data: data));
+              success = await serviceController.updateService(data);
             }
-            Navigator.pop(context);
+            Get.back();
+            if (success) {
+              showSnackBarWidget(
+                context,
+                widget.serviceId.isEmpty
+                    ? "Berhasil menambahkan layanan!"
+                    : "Berhasil update layanan!",
+                Theme.of(context).colorScheme.primary,
+              );
+            }
+            // ERROR
+            else {
+              showSnackBarWidget(
+                context,
+                serviceController.errorMessage.value,
+                Theme.of(context).colorScheme.error,
+              );
+            }
           },
           child: const Text("Simpan"),
         ),
@@ -140,4 +158,19 @@ class _InputServiceDialogWidgetState extends State<InputServiceDialogWidget> {
       ),
     );
   }
+}
+
+void showSnackBarWidget(BuildContext context, String text, Color colors) {
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(
+      backgroundColor: colors,
+      duration: Duration(seconds: 1),
+      content: Text(
+        text,
+        style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+          color: Theme.of(context).colorScheme.onPrimary,
+        ),
+      ),
+    ),
+  );
 }
