@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:flutter_golaundku/controller/customer_controller.dart';
 import 'package:flutter_golaundku/controller/discount_controller.dart';
+import 'package:flutter_golaundku/models/customer_model.dart';
+import 'package:flutter_golaundku/models/discount_model.dart';
 import 'package:flutter_golaundku/models/order_header.dart';
 import 'package:flutter_golaundku/models/order_item.dart';
 import 'package:flutter_golaundku/models/order_items_model.dart';
@@ -28,11 +30,53 @@ class OrderController extends GetxController {
   final actionError = ''.obs;
   final orderData = <OrderModel>[].obs;
   final detailOrderData = <OrderItemsModel>[].obs;
+  late Worker _customerWorker;
+  late Worker _discountWorker;
+  final _rawOrders = <OrderModel>[];
 
   @override
   void onInit() {
     super.onInit();
+    final customerController = Get.find<CustomerController>();
+    final discountController = Get.find<DiscountController>();
+    _customerWorker = ever<List<CustomerModel>>(
+      customerController.customerData,
+      (_) {
+        remapOrders();
+      },
+    );
+    _discountWorker = ever<List<DiscountModel>>(
+      discountController.discountData,
+      (_) {
+        remapOrders();
+      },
+    );
+
     streamOrders();
+  }
+
+  void remapOrders() {
+    final customerController = Get.find<CustomerController>();
+    final discountController = Get.find<DiscountController>();
+
+    final customerMap = {
+      for (final customer in customerController.customerData)
+        customer.customerId: customer,
+    };
+
+    final discountMap = {
+      for (final discount in discountController.discountData)
+        discount.discountId: discount,
+    };
+
+    final mappedOrders = _rawOrders.map((order) {
+      return order.copyWith(
+        customerModel: customerMap[order.customerId],
+        discountModel: discountMap[order.discountId],
+      );
+    }).toList();
+
+    orderData.assignAll(mappedOrders);
   }
 
   Future<void> streamOrders() async {
@@ -42,24 +86,10 @@ class OrderController extends GetxController {
       await _subscription?.cancel();
       _subscription = orderRepository.streamOrders().listen(
         (orders) {
-          final customerController = Get.find<CustomerController>();
-          final discountController = Get.find<DiscountController>();
-          final customerMap = {
-            for (final customer in customerController.customerData)
-              customer.customerId: customer,
-          };
-          final discountMap = {
-            for (final discount in discountController.discountData)
-              discount.discountId: discount,
-          };
-          final mappedOrders = orders.map((order) {
-            return order.copyWith(
-              customerModel: customerMap[order.customerId],
-              discountModel: discountMap[order.discountId],
-            );
-          }).toList();
-          orderData.assignAll(mappedOrders);
-          streamError.value = '';
+          _rawOrders
+            ..clear()
+            ..addAll(orders);
+          remapOrders();
           isLoading.value = false;
         },
         onError: (error) {
@@ -78,15 +108,16 @@ class OrderController extends GetxController {
     List<OrderItem> items,
   ) async {
     try {
-      isLoading.value = true;
       actionError.value = '';
+      isLoading.value = true;
+
       await orderRepository.addOrder(orderHeader, items);
+
       isLoading.value = false;
       return true;
     } catch (e) {
       actionError.value = "Gagal menambahkan order!";
       isLoading.value = false;
-
       return false;
     }
   }
@@ -94,7 +125,9 @@ class OrderController extends GetxController {
   Future<bool> updateOrderStatus(String orderId, String status) async {
     try {
       actionError.value = '';
+
       await orderRepository.updateStatusOrder(orderId, status);
+
       return true;
     } catch (e) {
       actionError.value = "Gagal mengupdate status order!";
@@ -148,17 +181,11 @@ class OrderController extends GetxController {
     }
   }
 
-  void clearActionError() {
-    actionError.value = '';
-  }
-
-  void clearStreamError() {
-    streamError.value = '';
-  }
-
   @override
   void onClose() {
     _subscription?.cancel();
+    _customerWorker.dispose();
+    _discountWorker.dispose();
     super.onClose();
   }
 }
