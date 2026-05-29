@@ -42,13 +42,13 @@ class _InputCustomerDialogWidgetState extends State<InputCustomerDialogWidget> {
   Widget build(BuildContext context) {
     return AlertDialog(
       title: Text(
-        widget.customerId.isEmpty ? "Tambah Customer" : "Update Customer",
+        widget.customerId.isEmpty ? "Tambah Pelanggan" : "Update Pelanggan",
       ),
       content: SingleChildScrollView(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            _buildInput(inputName, "Nama Customer"),
+            _buildInput(inputName, "Nama Pelanggan"),
             _buildInput(inputPhone, "No Telepon", isNumber: true),
             _buildInput(inputAddress, "Alamat"),
           ],
@@ -81,8 +81,8 @@ class _InputCustomerDialogWidgetState extends State<InputCustomerDialogWidget> {
               showSnackBarWidget(
                 context,
                 widget.customerId.isEmpty
-                    ? "Berhasil menambahkan customer!"
-                    : "Berhasil update customer!",
+                    ? "Berhasil menambahkan pelanggan!"
+                    : "Berhasil update pelanggan!",
                 Theme.of(context).colorScheme.primary,
               );
             }
