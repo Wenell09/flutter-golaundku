@@ -163,7 +163,7 @@ class _DetailOrderPageState extends State<DetailOrderPage> {
                                     ),
                                     Text(
                                       Helper.toIndoDate(
-                                        widget.orderModel.orderDate,
+                                        widget.orderModel.estimatedDate,
                                       ),
                                       style: Theme.of(context)
                                           .textTheme

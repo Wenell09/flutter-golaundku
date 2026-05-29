@@ -38,7 +38,7 @@ class _CustomerPageState extends State<CustomerPage> {
             filled: true,
             prefixIcon: const Icon(Icons.search),
             fillColor: Theme.of(context).colorScheme.onPrimary,
-            hintText: "Cari Customer...",
+            hintText: "Cari Pelanggan...",
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
           ),
         ),
@@ -78,7 +78,7 @@ class _CustomerPageState extends State<CustomerPage> {
                     size: 100,
                   ),
                   Text(
-                    "daftar customer kosong!",
+                    "daftar pelanggan kosong!",
                     style: Theme.of(context).textTheme.titleLarge,
                   ),
                 ],
@@ -132,9 +132,9 @@ class _CustomerPageState extends State<CustomerPage> {
                             onPressed: () {
                               Get.dialog(
                                 AlertDialog(
-                                  title: const Text("Hapus Customer"),
+                                  title: const Text("Hapus Pelanggan"),
                                   content: const Text(
-                                    "Apakah kamu yakin ingin menghapus customer ini?",
+                                    "Apakah kamu yakin ingin menghapus pelanggan ini?",
                                   ),
                                   actions: [
                                     TextButton(
@@ -149,7 +149,7 @@ class _CustomerPageState extends State<CustomerPage> {
                                         if (success) {
                                           showSnackBarWidget(
                                             context,
-                                            "Berhasil menghapus customer!",
+                                            "Berhasil menghapus pelanggan!",
                                             Theme.of(
                                               context,
                                             ).colorScheme.primary,

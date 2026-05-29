@@ -41,7 +41,7 @@ class CustomerController extends GetxController {
         },
       );
     } catch (e) {
-      streamError.value = "Gagal memuat data customer";
+      streamError.value = "Gagal memuat data pelanggan";
       isLoading.value = false;
     }
   }
@@ -52,7 +52,7 @@ class CustomerController extends GetxController {
       await customerRepository.addCustomer(data);
       return true;
     } catch (e) {
-      actionError.value = "Gagal menambahkan customer!";
+      actionError.value = "Gagal menambahkan pelanggan!";
       return false;
     }
   }
@@ -63,7 +63,7 @@ class CustomerController extends GetxController {
       await customerRepository.updateCustomer(data);
       return true;
     } catch (e) {
-      actionError.value = "Gagal mengupdate customer!";
+      actionError.value = "Gagal mengupdate pelanggan!";
       return false;
     }
   }
@@ -74,7 +74,7 @@ class CustomerController extends GetxController {
       await customerRepository.deleteCustomer(customerId);
       return true;
     } catch (e) {
-      actionError.value = "Gagal menghapus customer!";
+      actionError.value = "Gagal menghapus pelanggan!";
       return false;
     }
   }
