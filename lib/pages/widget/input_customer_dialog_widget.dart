@@ -60,6 +60,15 @@ class _InputCustomerDialogWidgetState extends State<InputCustomerDialogWidget> {
           onPressed: () async {
             final customerController = Get.find<CustomerController>();
             bool success = false;
+            if (inputName.text.isEmpty ||
+                inputAddress.text.isEmpty ||
+                inputPhone.text.isEmpty) {
+              return showSnackBarWidget(
+                context,
+                "Pastikan semua kolom sudah terisi!",
+                Theme.of(context).colorScheme.error,
+              );
+            }
             if (widget.customerId.isEmpty) {
               final data = {
                 "name": inputName.text,
@@ -85,9 +94,7 @@ class _InputCustomerDialogWidgetState extends State<InputCustomerDialogWidget> {
                     : "Berhasil update pelanggan!",
                 Theme.of(context).colorScheme.primary,
               );
-            }
-            // ERROR
-            else {
+            } else {
               showSnackBarWidget(
                 context,
                 customerController.actionError.value,
@@ -95,7 +102,6 @@ class _InputCustomerDialogWidgetState extends State<InputCustomerDialogWidget> {
               );
             }
           },
-
           child: const Text("Simpan"),
         ),
       ],

@@ -75,15 +75,23 @@ class _InputDiscountDialogWidgetState extends State<InputDiscountDialogWidget> {
         TextButton(onPressed: () => Get.back(), child: const Text("Batal")),
         FilledButton(
           onPressed: () async {
+            if (inputName.text.isEmpty ||
+                inputValue.text.isEmpty ||
+                selectedType!.isEmpty) {
+              return showSnackBarWidget(
+                context,
+                "Pastikan semua kolom sudah terisi!",
+                Theme.of(context).colorScheme.error,
+              );
+            }
             int val = int.tryParse(inputValue.text) ?? 0;
             if (selectedType == "percentage") {
               if (val < 1 || val > 100) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text("Nilai persen harus di antara 1 - 100"),
-                  ),
+                return showSnackBarWidget(
+                  context,
+                  "Nilai persen harus di antara 1 - 100",
+                  Theme.of(context).colorScheme.error,
                 );
-                return;
               }
             }
             final discountController = Get.find<DiscountController>();

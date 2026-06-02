@@ -118,9 +118,6 @@ class InputOrderController extends GetxController {
     if (selectedCustomer.value == null) {
       return "Pelanggan belum dipilih";
     }
-    if (selectedPayment.value == null) {
-      return "Metode pembayaran belum dipilih";
-    }
     bool hasKiloan = false;
     bool hasSatuan = false;
     if (selectedKiloan.value != null && berat.value.isNotEmpty) {
@@ -133,7 +130,6 @@ class InputOrderController extends GetxController {
       }
       hasKiloan = true;
     }
-
     for (int i = 0; i < formItems.length; i++) {
       final item = formItems[i];
       final qtyText = item.qtyController.text.trim();
@@ -143,13 +139,16 @@ class InputOrderController extends GetxController {
           return "Pilih layanan satuan pada item ke-${i + 1}";
         }
         if (qty <= 0) {
-          return "Qty pada item ke-${i + 1} harus lebih dari 0";
+          return "Jumlah pada item ke-${i + 1} harus lebih dari 0";
         }
         hasSatuan = true;
       }
     }
     if (!hasKiloan && !hasSatuan) {
       return "Minimal pilih layanan kiloan atau satuan";
+    }
+    if (selectedPayment.value == null) {
+      return "Metode pembayaran belum dipilih";
     }
     return null;
   }

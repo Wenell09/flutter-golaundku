@@ -13,7 +13,6 @@ class InputServiceDialogWidget extends StatefulWidget {
     this.textPrice = "",
     this.textDuration = "",
   });
-
   @override
   State<InputServiceDialogWidget> createState() =>
       _InputServiceDialogWidgetState();
@@ -62,15 +61,17 @@ class _InputServiceDialogWidgetState extends State<InputServiceDialogWidget> {
       ),
       actions: [
         TextButton(onPressed: () => Get.back(), child: const Text("Batal")),
-
         FilledButton(
           onPressed: () async {
-            if (selectedCategory == null) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text("Kategori harus dipilih")),
+            if (inputName.text.isEmpty ||
+                inputPrice.text.isEmpty ||
+                inputDuration.text.isEmpty ||
+                selectedCategory!.isEmpty) {
+              return showSnackBarWidget(
+                context,
+                "Pastikan semua kolom sudah terisi!",
+                Theme.of(context).colorScheme.error,
               );
-
-              return;
             }
             final serviceController = Get.find<ServiceController>();
             bool success = false;

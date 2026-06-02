@@ -14,7 +14,6 @@ class InputOrderPage extends StatelessWidget {
   InputOrderPage({super.key, required this.userId});
 
   final controller = Get.put(InputOrderController());
-
   final serviceController = Get.find<ServiceController>();
   final customerController = Get.find<CustomerController>();
   final discountController = Get.find<DiscountController>();
@@ -38,7 +37,6 @@ class InputOrderPage extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      /// CUSTOMER
                       Text(
                         "1. INFORMASI PELANGGAN",
                         style: Theme.of(context).textTheme.bodyLarge!.copyWith(
@@ -46,12 +44,9 @@ class InputOrderPage extends StatelessWidget {
                           color: Theme.of(context).colorScheme.primary,
                         ),
                       ),
-
                       const SizedBox(height: 10),
-
                       Obx(() {
                         final customers = customerController.customerData;
-
                         return DropdownButtonFormField<String>(
                           isExpanded: true,
                           initialValue: controller.selectedCustomer.value,
@@ -74,10 +69,7 @@ class InputOrderPage extends StatelessWidget {
                           onChanged: controller.selectCustomer,
                         );
                       }),
-
                       const SizedBox(height: 20),
-
-                      /// KILOAN
                       Text(
                         "2. LAYANAN KILOAN",
                         style: Theme.of(context).textTheme.bodyLarge!.copyWith(
@@ -85,14 +77,11 @@ class InputOrderPage extends StatelessWidget {
                           color: Theme.of(context).colorScheme.primary,
                         ),
                       ),
-
                       const SizedBox(height: 10),
-
                       Obx(() {
                         final services = serviceController.serviceData
                             .where((e) => e.category == "kiloan")
                             .toList();
-
                         return Column(
                           children: [
                             DropdownButtonFormField<String>(
@@ -117,9 +106,7 @@ class InputOrderPage extends StatelessWidget {
                               ],
                               onChanged: controller.selectKiloan,
                             ),
-
                             const SizedBox(height: 10),
-
                             TextField(
                               enabled: controller.selectedKiloan.value != null,
                               keyboardType: TextInputType.number,
@@ -135,10 +122,7 @@ class InputOrderPage extends StatelessWidget {
                           ],
                         );
                       }),
-
                       const SizedBox(height: 20),
-
-                      /// SATUAN
                       Text(
                         "3. LAYANAN SATUAN",
                         style: Theme.of(context).textTheme.bodyLarge!.copyWith(
@@ -146,14 +130,11 @@ class InputOrderPage extends StatelessWidget {
                           color: Theme.of(context).colorScheme.primary,
                         ),
                       ),
-
                       const SizedBox(height: 10),
-
                       Obx(() {
                         final services = serviceController.serviceData
                             .where((e) => e.category == "satuan")
                             .toList();
-
                         return Column(
                           children: [
                             ListView.builder(
@@ -162,7 +143,6 @@ class InputOrderPage extends StatelessWidget {
                               itemCount: controller.formItems.length,
                               itemBuilder: (context, index) {
                                 final item = controller.formItems[index];
-
                                 return Padding(
                                   padding: const EdgeInsets.only(bottom: 10),
                                   child: Row(
@@ -193,9 +173,7 @@ class InputOrderPage extends StatelessWidget {
                                           },
                                         ),
                                       ),
-
                                       const SizedBox(width: 10),
-
                                       Expanded(
                                         flex: 2,
                                         child: TextField(
@@ -213,9 +191,7 @@ class InputOrderPage extends StatelessWidget {
                                           },
                                         ),
                                       ),
-
                                       const SizedBox(width: 10),
-
                                       IconButton(
                                         icon: Icon(
                                           Icons.delete,
@@ -232,7 +208,6 @@ class InputOrderPage extends StatelessWidget {
                                 );
                               },
                             ),
-
                             Align(
                               alignment: Alignment.centerLeft,
                               child: TextButton.icon(
@@ -244,10 +219,7 @@ class InputOrderPage extends StatelessWidget {
                           ],
                         );
                       }),
-
                       const SizedBox(height: 20),
-
-                      /// PAYMENT
                       Text(
                         "4. PEMBAYARAN & PROMO",
                         style: Theme.of(context).textTheme.bodyLarge!.copyWith(
@@ -255,9 +227,7 @@ class InputOrderPage extends StatelessWidget {
                           color: Theme.of(context).colorScheme.primary,
                         ),
                       ),
-
                       const SizedBox(height: 10),
-
                       Obx(() {
                         return DropdownButtonFormField<String>(
                           initialValue: controller.selectedPayment.value,
@@ -284,15 +254,11 @@ class InputOrderPage extends StatelessWidget {
                           onChanged: controller.selectedPayment.call,
                         );
                       }),
-
                       const SizedBox(height: 10),
-
-                      /// DISCOUNT
                       Obx(() {
                         final discounts = discountController.discountData
                             .where((e) => e.active)
                             .toList();
-
                         return DropdownButtonFormField<String>(
                           initialValue:
                               controller.selectedDiscount.value?.discountId,
@@ -327,10 +293,7 @@ class InputOrderPage extends StatelessWidget {
                           },
                         );
                       }),
-
                       const SizedBox(height: 20),
-
-                      /// NOTES
                       Text(
                         "5. CATATAN (OPSIONAL)",
                         style: Theme.of(context).textTheme.bodyLarge!.copyWith(
@@ -338,9 +301,7 @@ class InputOrderPage extends StatelessWidget {
                           color: Theme.of(context).colorScheme.primary,
                         ),
                       ),
-
                       const SizedBox(height: 10),
-
                       TextField(
                         keyboardType: TextInputType.text,
                         onChanged: controller.inputCatatan,
@@ -351,27 +312,20 @@ class InputOrderPage extends StatelessWidget {
                           ),
                         ),
                       ),
-
                       const SizedBox(height: 20),
-
-                      /// TOTAL
                       Obx(() {
                         final items = controller.buildOrderItems(
                           serviceController.serviceData,
                         );
-
                         final subtotal = Helper.calculateSubtotal(items);
-
                         final discountAmount = Helper.calculateDiscountAmount(
                           subtotal: subtotal,
                           discount: controller.selectedDiscount.value,
                         );
-
                         final totalTagihan = Helper.calculateTotal(
                           items: items,
                           discount: controller.selectedDiscount.value,
                         );
-
                         return Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -395,9 +349,7 @@ class InputOrderPage extends StatelessWidget {
                                 ),
                               ],
                             ),
-
                             const SizedBox(height: 5),
-
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
@@ -426,9 +378,7 @@ class InputOrderPage extends StatelessWidget {
                                 ),
                               ],
                             ),
-
                             const SizedBox(height: 5),
-
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
@@ -459,8 +409,6 @@ class InputOrderPage extends StatelessWidget {
             ),
           ),
         ),
-
-        /// BUTTON
         Container(
           width: double.infinity,
           padding: const EdgeInsets.all(10),
@@ -480,12 +428,10 @@ class InputOrderPage extends StatelessWidget {
                         showSnackBarWidget(context, error, "error");
                         return;
                       }
-
                       final total = Helper.calculateTotal(
                         items: items,
                         discount: controller.selectedDiscount.value,
                       );
-
                       final header = OrderHeader(
                         customerId: controller.selectedCustomer.value!,
                         userId: userId,
@@ -498,7 +444,6 @@ class InputOrderPage extends StatelessWidget {
                         paymentStatus: "unpaid",
                         notes: controller.catatan.value,
                       );
-
                       final success = await orderController.createOrder(
                         header,
                         items,

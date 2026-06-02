@@ -113,6 +113,23 @@ class _LoginPageState extends State<LoginPage> {
           const SizedBox(height: 30),
           GestureDetector(
             onTap: () async {
+              if (inputName.text.isEmpty || inputPassword.text.isEmpty) {
+                return Get.dialog(
+                  AlertDialog(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    content: Text(
+                      "Pastikan Username dan Password terisi!",
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                );
+              }
               await authController.login(
                 name: inputName.text,
                 password: inputPassword.text,

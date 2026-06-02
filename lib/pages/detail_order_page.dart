@@ -80,6 +80,7 @@ class _DetailOrderPageState extends State<DetailOrderPage> {
                   Padding(
                     padding: const EdgeInsets.all(10),
                     child: Column(
+                      crossAxisAlignment: .start,
                       children: [
                         Row(
                           children: [
@@ -391,6 +392,15 @@ class _DetailOrderPageState extends State<DetailOrderPage> {
                               ),
                             );
                           },
+                        ),
+                        Text(
+                          "Catatan Pelanggan",
+                          style: Theme.of(context).textTheme.titleLarge,
+                        ),
+                        Text(
+                          widget.orderModel.notes.isEmpty
+                              ? "Tidak ada catatan dari pelanggan"
+                              : widget.orderModel.notes,
                         ),
                       ],
                     ),
