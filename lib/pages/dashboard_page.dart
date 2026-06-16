@@ -35,8 +35,19 @@ class DashboardPage extends StatelessWidget {
             colorIcon: Colors.orange,
           ),
           const SizedBox(height: 25),
-          Text("Antrian Pesanan", style: TextTheme.of(context).titleLarge),
+          Text("Antrean Pesanan", style: TextTheme.of(context).titleLarge),
           const SizedBox(height: 5),
+          (activeOrder.isEmpty || totalOrder == 0)
+              ? Center(
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 20),
+                    child: Text(
+                      "Tidak ada antrean pesanan!",
+                      style: Theme.of(context).textTheme.bodyLarge,
+                    ),
+                  ),
+                )
+              : Container(),
           ListView.builder(
             physics: const ScrollPhysics(),
             shrinkWrap: true,
