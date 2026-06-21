@@ -117,7 +117,7 @@ class DashboardPage extends StatelessWidget {
                           ),
                           Flexible(
                             child: Text(
-                              data.customerModel!.name,
+                              data.customerModel!.nameCustomer,
                               style: TextTheme.of(context).bodyLarge!.copyWith(
                                 fontWeight: FontWeight.bold,
                               ),

@@ -50,7 +50,9 @@ class _OrderListPageState extends State<OrderListPage> {
         Obx(() {
           final filteredData = orderController.orderData.where((data) {
             return data.orderId.toLowerCase().contains(keyword.value) ||
-                data.customerModel!.name.toLowerCase().contains(keyword.value);
+                data.customerModel!.nameCustomer.toLowerCase().contains(
+                  keyword.value,
+                );
           }).toList();
           if (orderController.isLoading.value) {
             return const Center(child: CircularProgressIndicator());
@@ -187,7 +189,7 @@ class _OrderListPageState extends State<OrderListPage> {
                         ),
                         const SizedBox(height: 5),
                         Text(
-                          data.customerModel!.name,
+                          data.customerModel!.nameCustomer,
                           style: Theme.of(context).textTheme.bodyLarge!
                               .copyWith(fontWeight: FontWeight.bold),
                         ),

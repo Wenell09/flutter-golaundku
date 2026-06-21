@@ -24,7 +24,7 @@ class DrawerWidget extends StatelessWidget {
         child: Column(
           children: [
             UserAccountsDrawerHeader(
-              accountName: Text(user.name),
+              accountName: Text(user.username),
               accountEmail: Text(user.role),
             ),
             Expanded(

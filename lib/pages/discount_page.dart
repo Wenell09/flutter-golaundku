@@ -72,7 +72,7 @@ class DiscountPage extends StatelessWidget {
                         children: [
                           Expanded(
                             child: Text(
-                              data.name,
+                              data.nameDiscount,
                               style: Theme.of(context).textTheme.titleLarge!
                                   .copyWith(
                                     color: Theme.of(
@@ -86,7 +86,7 @@ class DiscountPage extends StatelessWidget {
                               Get.dialog(
                                 InputDiscountDialogWidget(
                                   discountId: data.discountId,
-                                  textName: data.name,
+                                  textName: data.nameDiscount,
                                   textType: data.type,
                                   textValue: data.value.toString(),
                                   isActive: data.active,

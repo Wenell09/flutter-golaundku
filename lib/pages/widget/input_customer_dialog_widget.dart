@@ -71,7 +71,7 @@ class _InputCustomerDialogWidgetState extends State<InputCustomerDialogWidget> {
             }
             if (widget.customerId.isEmpty) {
               final data = {
-                "name": inputName.text,
+                "name_customer": inputName.text,
                 "phone": inputPhone.text,
                 "address": inputAddress.text,
               };
@@ -79,7 +79,7 @@ class _InputCustomerDialogWidgetState extends State<InputCustomerDialogWidget> {
             } else {
               final data = {
                 "customer_id": widget.customerId,
-                "name": inputName.text,
+                "name_customer": inputName.text,
                 "phone": inputPhone.text,
                 "address": inputAddress.text,
               };

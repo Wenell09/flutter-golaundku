@@ -56,7 +56,9 @@ class _PaymentPageState extends State<PaymentPage> {
 
           final filteredData = orderController.orderData.where((data) {
             return data.orderId.toLowerCase().contains(keyword.value) ||
-                data.customerModel!.name.toLowerCase().contains(keyword.value);
+                data.customerModel!.nameCustomer.toLowerCase().contains(
+                  keyword.value,
+                );
           }).toList();
 
           if (orderController.orderData.isEmpty) {
@@ -153,7 +155,7 @@ class _PaymentPageState extends State<PaymentPage> {
 
                           Flexible(
                             child: Text(
-                              data.customerModel!.name,
+                              data.customerModel!.nameCustomer,
                               style: Theme.of(context).textTheme.titleMedium!
                                   .copyWith(
                                     fontWeight: FontWeight.bold,

@@ -60,7 +60,7 @@ class InputOrderPage extends StatelessWidget {
                             return DropdownMenuItem(
                               value: data.customerId,
                               child: Text(
-                                data.name,
+                                data.nameCustomer,
                                 overflow: TextOverflow.ellipsis,
                                 maxLines: 1,
                               ),
@@ -100,7 +100,7 @@ class InputOrderPage extends StatelessWidget {
                                 ...services.map((data) {
                                   return DropdownMenuItem(
                                     value: data.serviceId,
-                                    child: Text(data.name),
+                                    child: Text(data.nameService),
                                   );
                                 }),
                               ],
@@ -162,7 +162,7 @@ class InputOrderPage extends StatelessWidget {
                                           items: services.map((data) {
                                             return DropdownMenuItem(
                                               value: data.serviceId,
-                                              child: Text(data.name),
+                                              child: Text(data.nameService),
                                             );
                                           }).toList(),
                                           onChanged: (value) {
@@ -276,7 +276,7 @@ class InputOrderPage extends StatelessWidget {
                             ...discounts.map((data) {
                               return DropdownMenuItem(
                                 value: data.discountId,
-                                child: Text(data.name),
+                                child: Text(data.nameDiscount),
                               );
                             }),
                           ],

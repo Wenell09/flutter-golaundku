@@ -49,7 +49,7 @@ class _CustomerPageState extends State<CustomerPage> {
         Obx(() {
           final filteredData = customerController.customerData.where((data) {
             return data.customerId.toLowerCase().contains(keyword.value) ||
-                data.name.toLowerCase().contains(keyword.value);
+                data.nameCustomer.toLowerCase().contains(keyword.value);
           }).toList();
           if (customerController.isLoading.value) {
             return const Center(child: CircularProgressIndicator());
@@ -124,7 +124,7 @@ class _CustomerPageState extends State<CustomerPage> {
                         children: [
                           Expanded(
                             child: Text(
-                              data.name,
+                              data.nameCustomer,
                               style: Theme.of(context).textTheme.titleLarge!
                                   .copyWith(
                                     color: Theme.of(
@@ -138,7 +138,7 @@ class _CustomerPageState extends State<CustomerPage> {
                               Get.dialog(
                                 InputCustomerDialogWidget(
                                   customerId: data.customerId,
-                                  textName: data.name,
+                                  textName: data.nameCustomer,
                                   textPhone: data.phone,
                                   textAddress: data.address,
                                 ),

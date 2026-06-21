@@ -1,6 +1,6 @@
 class ServiceModel {
   final String serviceId;
-  final String name;
+  final String nameService;
   final String category;
   final int price;
   final String unit;
@@ -9,7 +9,7 @@ class ServiceModel {
 
   ServiceModel({
     required this.serviceId,
-    required this.name,
+    required this.nameService,
     required this.category,
     required this.price,
     required this.unit,
@@ -20,7 +20,7 @@ class ServiceModel {
   factory ServiceModel.fromJson(Map<String, dynamic> json) {
     return ServiceModel(
       serviceId: json["service_id"] ?? "",
-      name: json["name"] ?? "",
+      nameService: json["name_service"] ?? "",
       category: json["category"] ?? "",
       price: json["price"] ?? 0,
       unit: json["unit"] ?? "",

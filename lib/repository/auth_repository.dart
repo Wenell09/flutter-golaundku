@@ -9,7 +9,7 @@ class AuthRepository {
       final response = await supabase
           .from('users')
           .select()
-          .eq('name', username)
+          .eq('username', username)
           .maybeSingle();
       if (response == null) {
         throw Exception("Login Gagal: Username atau Password salah");

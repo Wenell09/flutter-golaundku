@@ -131,7 +131,7 @@ class _LoginPageState extends State<LoginPage> {
                 );
               }
               await authController.login(
-                name: inputName.text,
+                username: inputName.text,
                 password: inputPassword.text,
               );
               if (authController.userId.value.isNotEmpty) {

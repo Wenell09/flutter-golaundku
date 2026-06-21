@@ -9,7 +9,7 @@ class DiscountRepository {
     try {
       await supabase.from("discounts").insert({
         "discount_id": Uuid().v4(),
-        "name": data["name"],
+        "name_discount": data["name_discount"],
         "type": data["type"],
         "value": data["value"],
         "active": data["active"],
@@ -41,7 +41,7 @@ class DiscountRepository {
       await supabase
           .from("discounts")
           .update({
-            "name": data["name"],
+            "name_discount": data["name_discount"],
             "type": data["type"],
             "value": data["value"],
             "active": data["active"],

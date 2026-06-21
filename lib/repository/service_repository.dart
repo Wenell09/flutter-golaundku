@@ -10,7 +10,7 @@ class ServiceRepository {
     try {
       await supabase.from("services").insert({
         "service_id": Uuid().v4(),
-        "name": data["name"],
+        "name_service": data["name_service"],
         "category": data["category"],
         "price": data["price"],
         "min_weight": data["min_weight"],
@@ -38,7 +38,7 @@ class ServiceRepository {
       await supabase
           .from("services")
           .update({
-            "name": data["name"],
+            "name_service": data["name_service"],
             "category": data["category"],
             "price": data["price"],
             "min_weight": data["min_weight"],

@@ -100,7 +100,10 @@ class _DetailOrderPageState extends State<DetailOrderPage> {
                                     ).textTheme.bodySmall,
                                   ),
                                   Text(
-                                    widget.orderModel.customerModel!.name,
+                                    widget
+                                        .orderModel
+                                        .customerModel!
+                                        .nameCustomer,
                                     style: Theme.of(context)
                                         .textTheme
                                         .bodyLarge!
@@ -258,7 +261,7 @@ class _DetailOrderPageState extends State<DetailOrderPage> {
                                         MainAxisAlignment.spaceBetween,
                                     children: [
                                       Text(
-                                        service.name,
+                                        service.nameService,
                                         style: Theme.of(
                                           context,
                                         ).textTheme.titleLarge,

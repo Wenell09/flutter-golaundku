@@ -77,7 +77,7 @@ class _InputServiceDialogWidgetState extends State<InputServiceDialogWidget> {
             bool success = false;
             if (widget.serviceId.isEmpty) {
               final data = {
-                "name": inputName.text,
+                "name_service": inputName.text,
                 "category": selectedCategory,
                 "price": int.tryParse(inputPrice.text) ?? 0,
                 "min_weight": 4,
@@ -87,7 +87,7 @@ class _InputServiceDialogWidgetState extends State<InputServiceDialogWidget> {
             } else {
               final data = {
                 "service_id": widget.serviceId,
-                "name": inputName.text,
+                "name_service": inputName.text,
                 "category": selectedCategory,
                 "price": int.tryParse(inputPrice.text) ?? 0,
                 "min_weight": 4,

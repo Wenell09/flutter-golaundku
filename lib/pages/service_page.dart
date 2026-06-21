@@ -48,7 +48,7 @@ class _ServicePageState extends State<ServicePage> {
         Obx(() {
           final filteredData = serviceController.serviceData.where((data) {
             return data.serviceId.toLowerCase().contains(keyword.value) ||
-                data.name.toLowerCase().contains(keyword.value);
+                data.nameService.toLowerCase().contains(keyword.value);
           }).toList();
           if (serviceController.isLoading.value) {
             return const Center(child: CircularProgressIndicator());
@@ -123,7 +123,7 @@ class _ServicePageState extends State<ServicePage> {
                         children: [
                           Expanded(
                             child: Text(
-                              data.name,
+                              data.nameService,
                               style: Theme.of(context).textTheme.titleLarge!
                                   .copyWith(
                                     color: Theme.of(
@@ -137,7 +137,7 @@ class _ServicePageState extends State<ServicePage> {
                               Get.dialog(
                                 InputServiceDialogWidget(
                                   serviceId: data.serviceId,
-                                  textName: data.name,
+                                  textName: data.nameService,
                                   textCategory: data.category,
                                   textPrice: data.price.toString(),
                                   textDuration: data.duration.toString(),

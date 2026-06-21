@@ -10,10 +10,13 @@ class AuthController extends GetxController {
   final userId = ''.obs;
   final errorMessage = ''.obs;
 
-  Future<void> login({required String name, required String password}) async {
+  Future<void> login({
+    required String username,
+    required String password,
+  }) async {
     try {
       isLoading.value = true;
-      final result = await authRepository.login(name, password);
+      final result = await authRepository.login(username, password);
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString('user_id', result);
       userId.value = result;

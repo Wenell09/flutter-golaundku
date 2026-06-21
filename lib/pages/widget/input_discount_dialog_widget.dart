@@ -98,7 +98,7 @@ class _InputDiscountDialogWidgetState extends State<InputDiscountDialogWidget> {
             bool success = false;
             if (widget.discountId.isEmpty) {
               final data = {
-                "name": inputName.text,
+                "name_discount": inputName.text,
                 "type": selectedType,
                 "value": val,
                 "active": selectedActive,
@@ -107,7 +107,7 @@ class _InputDiscountDialogWidgetState extends State<InputDiscountDialogWidget> {
             } else {
               final data = {
                 "discount_id": widget.discountId,
-                "name": inputName.text,
+                "name_discount": inputName.text,
                 "type": selectedType,
                 "value": val,
                 "active": selectedActive,

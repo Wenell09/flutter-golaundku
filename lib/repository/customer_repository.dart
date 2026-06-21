@@ -10,7 +10,7 @@ class CustomerRepository {
     try {
       await supabase.from("customers").insert({
         "customer_id": Uuid().v4(),
-        "name": data["name"],
+        "name_customer": data["name_customer"],
         "phone": data["phone"],
         "address": data["address"],
       });
@@ -41,7 +41,7 @@ class CustomerRepository {
       await supabase
           .from("customers")
           .update({
-            "name": data["name"],
+            "name_customer": data["name_customer"],
             "phone": data["phone"],
             "address": data["address"],
           })
