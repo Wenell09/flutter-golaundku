@@ -100,7 +100,7 @@ class _CustomerPageState extends State<CustomerPage> {
                 children: [
                   const Icon(Icons.search_off, size: 100),
                   Text(
-                    "Order tidak ditemukan!",
+                    "Pelanggan tidak ditemukan!",
                     style: Theme.of(context).textTheme.titleLarge,
                   ),
                 ],

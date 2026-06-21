@@ -99,7 +99,7 @@ class _ServicePageState extends State<ServicePage> {
                 children: [
                   const Icon(Icons.search_off, size: 100),
                   Text(
-                    "Order tidak ditemukan!",
+                    "Layanan tidak ditemukan!",
                     style: Theme.of(context).textTheme.titleLarge,
                   ),
                 ],
