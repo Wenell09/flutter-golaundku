@@ -9,7 +9,7 @@ class UserRepository {
     try {
       final response = await supabase
           .from("users")
-          .select("user_id,name,role")
+          .select("user_id,username,role")
           .eq("user_id", userId)
           .single();
       if (response.isEmpty) {
