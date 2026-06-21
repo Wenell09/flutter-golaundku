@@ -29,6 +29,12 @@ android {
         versionCode = flutter.versionCode
         versionName = flutter.versionName
     }
+    
+    packaging {
+        jniLibs {
+            useLegacyPackaging = true
+        }
+    }
 
     buildTypes {
         release {

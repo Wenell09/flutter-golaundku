@@ -78,18 +78,6 @@ class ServiceController extends GetxController {
     }
   }
 
-  void searchService(String keyword) {
-    final query = keyword.toLowerCase().trim();
-    if (query.isEmpty) {
-      serviceData.assignAll(allServices);
-      return;
-    }
-    final filtered = allServices.where((service) {
-      return service.name.toLowerCase().contains(query);
-    }).toList();
-    serviceData.assignAll(filtered);
-  }
-
   @override
   void onClose() {
     _subscription?.cancel();

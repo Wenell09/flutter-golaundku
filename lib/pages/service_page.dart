@@ -12,6 +12,7 @@ class ServicePage extends StatefulWidget {
 class _ServicePageState extends State<ServicePage> {
   late TextEditingController inputSearchLayanan;
   final serviceController = Get.find<ServiceController>();
+  final keyword = "".obs;
 
   @override
   void initState() {
@@ -32,7 +33,9 @@ class _ServicePageState extends State<ServicePage> {
       children: [
         TextField(
           controller: inputSearchLayanan,
-          onChanged: serviceController.searchService,
+          onChanged: (value) {
+            keyword.value = value.toLowerCase();
+          },
           decoration: InputDecoration(
             filled: true,
             prefixIcon: const Icon(Icons.search),
@@ -43,6 +46,10 @@ class _ServicePageState extends State<ServicePage> {
         ),
         const SizedBox(height: 20),
         Obx(() {
+          final filteredData = serviceController.serviceData.where((data) {
+            return data.serviceId.toLowerCase().contains(keyword.value) ||
+                data.name.toLowerCase().contains(keyword.value);
+          }).toList();
           if (serviceController.isLoading.value) {
             return const Center(child: CircularProgressIndicator());
           }
@@ -84,12 +91,27 @@ class _ServicePageState extends State<ServicePage> {
               ),
             );
           }
+          if (filteredData.isEmpty) {
+            return SizedBox(
+              height: MediaQuery.of(context).size.height / 2,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(Icons.search_off, size: 100),
+                  Text(
+                    "Order tidak ditemukan!",
+                    style: Theme.of(context).textTheme.titleLarge,
+                  ),
+                ],
+              ),
+            );
+          }
           return ListView.builder(
             physics: const NeverScrollableScrollPhysics(),
             shrinkWrap: true,
-            itemCount: serviceController.serviceData.length,
+            itemCount: filteredData.length,
             itemBuilder: (context, index) {
-              final data = serviceController.serviceData[index];
+              final data = filteredData[index];
               return Card(
                 child: Padding(
                   padding: const EdgeInsets.all(10),

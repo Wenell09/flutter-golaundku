@@ -48,13 +48,32 @@ class _OrderListPageState extends State<OrderListPage> {
         ),
         const SizedBox(height: 20),
         Obx(() {
-          if (orderController.isLoading.value) {
-            return const Center(child: CircularProgressIndicator());
-          }
           final filteredData = orderController.orderData.where((data) {
             return data.orderId.toLowerCase().contains(keyword.value) ||
                 data.customerModel!.name.toLowerCase().contains(keyword.value);
           }).toList();
+          if (orderController.isLoading.value) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          if (orderController.streamError.value.isNotEmpty) {
+            return SizedBox(
+              height: MediaQuery.of(context).size.height / 2,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.warning,
+                    color: Theme.of(context).colorScheme.error,
+                    size: 100,
+                  ),
+                  Text(
+                    "Koneksi realtime bermasalah",
+                    style: Theme.of(context).textTheme.titleLarge,
+                  ),
+                ],
+              ),
+            );
+          }
           if (orderController.orderData.isEmpty) {
             return SizedBox(
               height: MediaQuery.of(context).size.height / 2,
@@ -89,7 +108,6 @@ class _OrderListPageState extends State<OrderListPage> {
               ),
             );
           }
-
           return ListView.builder(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),

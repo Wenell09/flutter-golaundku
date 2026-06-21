@@ -79,18 +79,6 @@ class CustomerController extends GetxController {
     }
   }
 
-  void searchCustomer(String keyword) {
-    final query = keyword.toLowerCase().trim();
-    if (query.isEmpty) {
-      customerData.assignAll(allCustomer);
-      return;
-    }
-    final filtered = allCustomer.where((data) {
-      return data.name.toLowerCase().contains(query);
-    }).toList();
-    customerData.assignAll(filtered);
-  }
-
   @override
   void onClose() {
     _subscription?.cancel();

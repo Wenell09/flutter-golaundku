@@ -13,6 +13,7 @@ class CustomerPage extends StatefulWidget {
 class _CustomerPageState extends State<CustomerPage> {
   late TextEditingController inputSearchCustomer;
   final customerController = Get.find<CustomerController>();
+  final keyword = ''.obs;
 
   @override
   void initState() {
@@ -33,7 +34,9 @@ class _CustomerPageState extends State<CustomerPage> {
       children: [
         TextField(
           controller: inputSearchCustomer,
-          onChanged: customerController.searchCustomer,
+          onChanged: (value) {
+            keyword.value = value.toLowerCase();
+          },
           decoration: InputDecoration(
             filled: true,
             prefixIcon: const Icon(Icons.search),
@@ -44,6 +47,10 @@ class _CustomerPageState extends State<CustomerPage> {
         ),
         const SizedBox(height: 20),
         Obx(() {
+          final filteredData = customerController.customerData.where((data) {
+            return data.customerId.toLowerCase().contains(keyword.value) ||
+                data.name.toLowerCase().contains(keyword.value);
+          }).toList();
           if (customerController.isLoading.value) {
             return const Center(child: CircularProgressIndicator());
           }
@@ -85,12 +92,27 @@ class _CustomerPageState extends State<CustomerPage> {
               ),
             );
           }
+          if (filteredData.isEmpty) {
+            return SizedBox(
+              height: MediaQuery.of(context).size.height / 2,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(Icons.search_off, size: 100),
+                  Text(
+                    "Order tidak ditemukan!",
+                    style: Theme.of(context).textTheme.titleLarge,
+                  ),
+                ],
+              ),
+            );
+          }
           return ListView.builder(
             physics: const NeverScrollableScrollPhysics(),
             shrinkWrap: true,
-            itemCount: customerController.customerData.length,
+            itemCount: filteredData.length,
             itemBuilder: (context, index) {
-              final data = customerController.customerData[index];
+              final data = filteredData[index];
               return Card(
                 child: Padding(
                   padding: const EdgeInsets.all(10),

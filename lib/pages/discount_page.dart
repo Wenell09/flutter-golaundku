@@ -5,7 +5,6 @@ import 'package:get/get.dart';
 
 class DiscountPage extends StatelessWidget {
   DiscountPage({super.key});
-
   final discountController = Get.find<DiscountController>();
 
   @override
@@ -14,13 +13,10 @@ class DiscountPage extends StatelessWidget {
       padding: const EdgeInsets.all(15),
       children: [
         const SizedBox(height: 20),
-
-        /// LOADING & STREAM ERROR
         Obx(() {
           if (discountController.isLoading.value) {
             return const Center(child: CircularProgressIndicator());
           }
-
           if (discountController.streamError.value.isNotEmpty) {
             return SizedBox(
               height: MediaQuery.of(context).size.height / 2,
@@ -40,15 +36,7 @@ class DiscountPage extends StatelessWidget {
               ),
             );
           }
-
-          return const SizedBox.shrink();
-        }),
-
-        /// EMPTY STATE
-        Obx(() {
-          if (discountController.discountData.isEmpty &&
-              !discountController.isLoading.value &&
-              discountController.streamError.value.isEmpty) {
+          if (discountController.discountData.isEmpty) {
             return SizedBox(
               height: MediaQuery.of(context).size.height / 2,
               child: Column(
@@ -60,30 +48,19 @@ class DiscountPage extends StatelessWidget {
                     size: 100,
                   ),
                   Text(
-                    "daftar discount kosong!",
+                    "daftar pelanggan kosong!",
                     style: Theme.of(context).textTheme.titleLarge,
                   ),
                 ],
               ),
             );
           }
-
-          return const SizedBox.shrink();
-        }),
-
-        /// LIST DATA
-        Obx(() {
-          if (discountController.discountData.isEmpty) {
-            return const SizedBox.shrink();
-          }
-
           return ListView.builder(
             physics: const NeverScrollableScrollPhysics(),
             shrinkWrap: true,
             itemCount: discountController.discountData.length,
             itemBuilder: (context, index) {
               final data = discountController.discountData[index];
-
               return Card(
                 child: Padding(
                   padding: const EdgeInsets.all(10),
@@ -104,8 +81,6 @@ class DiscountPage extends StatelessWidget {
                                   ),
                             ),
                           ),
-
-                          /// EDIT
                           IconButton(
                             onPressed: () {
                               Get.dialog(
@@ -124,8 +99,6 @@ class DiscountPage extends StatelessWidget {
                               color: Theme.of(context).colorScheme.primary,
                             ),
                           ),
-
-                          /// DELETE
                           IconButton(
                             onPressed: () {
                               Get.dialog(
@@ -139,14 +112,11 @@ class DiscountPage extends StatelessWidget {
                                       onPressed: () => Get.back(),
                                       child: const Text("Batal"),
                                     ),
-
                                     FilledButton(
                                       onPressed: () async {
                                         Get.back();
-
                                         final success = await discountController
                                             .deleteDiscount(data.discountId);
-
                                         if (success) {
                                           showSnackBarWidget(
                                             context,
@@ -184,7 +154,6 @@ class DiscountPage extends StatelessWidget {
                           ),
                         ],
                       ),
-
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -195,9 +164,7 @@ class DiscountPage extends StatelessWidget {
                                 size: 20,
                                 color: Theme.of(context).colorScheme.primary,
                               ),
-
                               const SizedBox(width: 5),
-
                               Text(
                                 data.type == "fixed"
                                     ? "Rp ${data.value}"
@@ -207,7 +174,6 @@ class DiscountPage extends StatelessWidget {
                               ),
                             ],
                           ),
-
                           Row(
                             children: [
                               Text(
@@ -215,9 +181,7 @@ class DiscountPage extends StatelessWidget {
                                 style: Theme.of(context).textTheme.bodyMedium!
                                     .copyWith(fontWeight: FontWeight.w500),
                               ),
-
                               const SizedBox(width: 5),
-
                               Text(
                                 data.active ? "Aktif" : "Tidak Aktif",
                                 style: Theme.of(context).textTheme.bodyMedium!
