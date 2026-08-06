@@ -219,7 +219,9 @@ class _OrderListPageState extends State<OrderListPage> {
                                 ),
                                 const SizedBox(width: 5),
                                 Text(
-                                  "Estimasi: ${Helper.toIndoDate(data.estimatedDate)}",
+                                  data.estimatedDate != null
+                                      ? Helper.toIndoDate(data.estimatedDate!)
+                                      : "Menghitung...",
                                 ),
                               ],
                             ),

@@ -166,9 +166,11 @@ class _DetailOrderPageState extends State<DetailOrderPage> {
                                       ).textTheme.bodySmall,
                                     ),
                                     Text(
-                                      Helper.toIndoDate(
-                                        widget.orderModel.estimatedDate,
-                                      ),
+                                      widget.orderModel.estimatedDate != null
+                                          ? Helper.toIndoDate(
+                                              widget.orderModel.estimatedDate!,
+                                            )
+                                          : "Menghitung estimasi...",
                                       style: Theme.of(context)
                                           .textTheme
                                           .bodyLarge!

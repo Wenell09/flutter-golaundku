@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_golaundku/models/discount_model.dart';
 import 'package:flutter_golaundku/models/order_item.dart';
 import 'package:flutter_golaundku/models/service_form_item.dart';
@@ -6,6 +7,7 @@ import 'package:get/get.dart';
 import 'package:uuid/uuid.dart';
 
 class InputOrderController extends GetxController {
+  final beratController = TextEditingController();
   var selectedCustomer = RxnString();
   var selectedKiloan = RxnString();
   var selectedPayment = RxnString();
@@ -69,6 +71,7 @@ class InputOrderController extends GetxController {
     selectedPayment.value = null;
     selectedDiscount.value = null;
     berat.value = '';
+    beratController.clear();
     catatan.value = '';
     formItems.value = [ServiceFormItem()];
   }
@@ -151,5 +154,11 @@ class InputOrderController extends GetxController {
       return "Metode pembayaran belum dipilih";
     }
     return null;
+  }
+
+  @override
+  void onClose() {
+    beratController.dispose();
+    super.onClose();
   }
 }

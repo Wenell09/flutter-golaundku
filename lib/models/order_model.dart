@@ -9,7 +9,7 @@ class OrderModel {
   final CustomerModel? customerModel;
   final DiscountModel? discountModel;
   final DateTime orderDate;
-  final DateTime estimatedDate;
+  final DateTime? estimatedDate;
   final int totalPrice;
   final String status;
   final String paymentStatus;
@@ -39,7 +39,9 @@ class OrderModel {
       userId: json["user_id"] ?? "",
       discountId: json["discount_id"] ?? "",
       orderDate: DateTime.parse(json["order_date"]),
-      estimatedDate: DateTime.parse(json["estimated_date"]),
+      estimatedDate: json["estimated_date"] != null
+          ? DateTime.parse(json["estimated_date"])
+          : null,
       totalPrice: json["total_price"] ?? 0,
       status: json["status"] ?? "",
       paymentStatus: json["payment_status"] ?? "",

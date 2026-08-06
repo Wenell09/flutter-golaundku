@@ -108,6 +108,7 @@ class InputOrderPage extends StatelessWidget {
                             ),
                             const SizedBox(height: 10),
                             TextField(
+                              controller: controller.beratController,
                               enabled: controller.selectedKiloan.value != null,
                               keyboardType: TextInputType.number,
                               onChanged: controller.inputBerat,
